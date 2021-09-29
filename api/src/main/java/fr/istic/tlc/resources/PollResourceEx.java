@@ -33,14 +33,15 @@ public class PollResourceEx {
 	@Autowired
 	PollRepository pollRepository;
 
-	@ConfigProperty(name = "doodle.usepad")
-	boolean usePad = true;
+	@ConfigProperty(name = "doodle.usepad", defaultValue = "true")
+	boolean usePad;
 	@ConfigProperty(name = "doodle.internalPadUrl", defaultValue="http://etherpad:9001/")
-	String padUrl = "";
+	String padUrl;
 	@ConfigProperty(name = "doodle.externalPadUrl", defaultValue="http://etherpad.diverse-team.fr/")
-	String externalPadUrl = "";
-	@ConfigProperty(name = "doodle.padApiKey")
-	String apikey = "";
+	String externalPadUrl;
+	@ConfigProperty(name = "doodle.padApiKey", defaultValue = "")
+	String apikey;
+
 	EPLiteClient client;
 
 	@GetMapping("/polls")

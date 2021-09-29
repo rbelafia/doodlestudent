@@ -45,8 +45,9 @@ public class SendEmail {
 	@Inject
 	PollRepository pollRep;
 
-	@ConfigProperty(name = "doodle.organizermail")
-	String organizermail= "test@test.fr";
+	@ConfigProperty(name = "doodle.organizermail", defaultValue = "test@test.fr")
+	String organizermail;
+
 	public void sendASimpleEmail(Poll p )  {
 		// Create a default MimeMessage object.
 		System.setProperty("net.fortuna.ical4j.timezone.cache.impl", MapTimeZoneCache.class.getName());
