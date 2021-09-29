@@ -1,0 +1,32 @@
+
+build-back:
+  image: maven:3.8.1-jdk-11-slim
+  stage: build
+  script:
+    - cd api
+    - docker compose up -d
+    - mvn clean package -Dmaven.test.skip=true
+
+build-front:
+  image: node:10-alpine
+  stage: build
+  script:
+    - cd front
+    - npm install
+    - npm run ng build
+
+test-back:
+  image: maven:3.8.1-jdk-11-slim
+  stage: test
+  script:
+    - cd api
+    - docker compose up -d
+    - mvn clean test
+
+test-front:
+  image: node:10-alpine
+  stage: test
+  script:
+    - cd front
+    - npm install
+    - npm run ng test
