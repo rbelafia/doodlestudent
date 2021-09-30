@@ -17,8 +17,8 @@ build-front:
 test-back:
   image: maven:3.8.1-jdk-11-slim
   services:
-    - docker/compose
-    command: ["cd", "api", ";", "docker-compose", "up", "--detach"]
+    - name: docker/compose
+      command: ["cd", "api", ";", "docker-compose", "up", "--detach"]
   stage: test
   script:
     - cd api
