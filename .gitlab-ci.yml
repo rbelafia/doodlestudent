@@ -17,12 +17,8 @@ build-front:
 test-back:
   image: maven:3.8.1-jdk-11-slim
   services:
-    - mysql:latest
-  variables:
-    MYSQL_ROOT_PASSWORD: root
-    MYSQL_DATABASE: tlc
-    MYSQL_USER: tlc
-    MYSQL_PASSWORD: tlc
+    - docker/compose
+    command: ["cd", "api", ";", "docker-compose", "up", "--detach"]
   stage: test
   script:
     - cd api
