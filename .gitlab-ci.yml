@@ -4,7 +4,6 @@ build-back:
   stage: build
   script:
     - cd api
-    - docker compose up -d
     - mvn clean package -Dmaven.test.skip=true
 
 build-front:
@@ -17,10 +16,16 @@ build-front:
 
 test-back:
   image: maven:3.8.1-jdk-11-slim
+  services:
+    - mysql:latest
+  variables:
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_DATABASE: tlc
+    MYSQL_USER: tlc
+    MYSQL_PASSWORD: tlc
   stage: test
   script:
     - cd api
-    - docker compose up -d
     - mvn clean test
 
 test-front:
