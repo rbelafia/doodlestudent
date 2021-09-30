@@ -1,3 +1,5 @@
+greeting:
+  message: "hello"
 doodle:
   usepad: true
   internalPadUrl: "http://localhost:9001/"
