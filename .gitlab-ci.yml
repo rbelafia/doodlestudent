@@ -15,12 +15,11 @@ build-back:
 #    - npm run ng build
 
 test-back:
-  image: maven:3.8.1-jdk-11-slim
-  services:
-    - name: docker/compose
+  image: rbelafia/maven-compose:latest
   stage: test
   script:
     - cd api
+    - docker-compose up -d
     - mvn clean test
 
 #test-front:
