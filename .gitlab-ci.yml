@@ -6,28 +6,28 @@ build-back:
     - cd api
     - mvn clean package -Dmaven.test.skip=true
 
-build-front:
-  image: node:10-alpine
-  stage: build
-  script:
-    - cd front
-    - npm install
-    - npm run ng build
+#build-front:
+#  image: node:10-alpine
+#  stage: build
+#  script:
+#    - cd front
+#    - npm install
+#    - npm run ng build
 
 test-back:
   image: maven:3.8.1-jdk-11-slim
   services:
     - name: docker/compose
-      command: ["cd", "api", ";", "docker-compose", "up", "--detach"]
+      command: ["docker-compose", "up", "--detach"]
   stage: test
   script:
     - cd api
     - mvn clean test
 
-test-front:
-  image: node:10-alpine
-  stage: test
-  script:
-    - cd front
-    - npm install
-    - npm run ng test
+#test-front:
+#  image: node:10-alpine
+#  stage: test
+#  script:
+#    - cd front
+#    - npm install
+#    - npm run ng test
