@@ -15,7 +15,7 @@ build-back:
 #    - npm run ng build
 
 test-back:
-  image: rbelafia/maven-compose:latest
+  image: docker/compose
   stage: test
   script:
     - cd api
