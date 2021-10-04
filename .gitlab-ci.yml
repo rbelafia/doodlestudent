@@ -15,7 +15,7 @@ build-back:
 #    - npm run ng build
 
 test-back:
-  image: docker/compose
+  image: docker/compose:1.29.2
   stage: test
   script:
     - cd api
