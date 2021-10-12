@@ -29,8 +29,6 @@ test-back:
     MYSQL_USER: tlc
     MYSQL_PASSWORD: tlc
   script:
-    - apt-get update
-    - apt-get -y install mysql-client
     - cd api
     - mysql --host=mysql --user=tlc --password=tlc tlc < src/main/resources/db/migration/V1__Initial_version.sql
     - mvn clean test
