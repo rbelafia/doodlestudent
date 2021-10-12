@@ -5,6 +5,10 @@ build-back:
   script:
     - cd api
     - mvn clean package -Dmaven.test.skip=true
+  artifacts:
+    paths:
+      - api/target/tlcdemoApp-1.0.0-SNAPSHOT.jar
+    expire_in: 1 week
 
 #build-front:
 #  image: node:10-alpine
@@ -15,12 +19,19 @@ build-back:
 #    - npm run ng build
 
 test-back:
-  image: docker/compose:1.29.2
+  image: maven:3.8.1-jdk-11-slim
   stage: test
+  services:
+    - mysql
+  variables:
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_DATABASE: tlc
+    MYSQL_USER: tlc
+    MYSQL_PASSWORD: tlc
   script:
     - cd api
-    - docker-compose up -d
     - mvn clean test
+
 
 #test-front:
 #  image: node:10-alpine
