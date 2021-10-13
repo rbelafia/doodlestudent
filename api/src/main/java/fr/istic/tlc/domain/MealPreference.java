@@ -1,6 +1,10 @@
 package fr.istic.tlc.domain;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class MealPreference {
@@ -13,10 +17,11 @@ public class MealPreference {
     @ManyToOne
     User user;
 
-    public MealPreference(){}
+    public MealPreference() {
+    }
 
-    public MealPreference(String content){
-        this.content=content;
+    public MealPreference(String content) {
+        this.content = content;
     }
 
     public Long getId() {

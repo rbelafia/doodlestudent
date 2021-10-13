@@ -17,9 +17,9 @@
     -->
     <module name="TreeWalker">
         <module name="EqualsAvoidNull"/>
-        <module name="FinalClass"/>
+<!--        <module name="FinalClass"/>-->
         <module name="FinalLocalVariable"/>
-        <module name="FinalParameters"/>
+<!--        <module name="FinalParameters"/>-->
         <module name="IllegalThrows"/>
         <module name="IllegalToken" />
         <module name="IllegalTokenText" />
@@ -51,7 +51,7 @@
         <module name="InterfaceIsType"/>
         <module name="HideUtilityClassConstructor"/>
         <module name="NestedIfDepth">
-            <property name="max" value="2"/>
+            <property name="max" value="3"/>
         </module>
         <module name="NestedTryDepth">
             <property name="max" value="1"/>
@@ -59,7 +59,7 @@
         <module name="NoFinalizer"/>
         <module name="ParameterAssignment"/>
         <module name="CyclomaticComplexity">
-            <property name="max" value="10"/>
+            <property name="max" value="15"/>
             <property name="switchBlockAsSingleDecisionPoint" value="true"/>
         </module>
 

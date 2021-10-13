@@ -49,19 +49,19 @@ public class ExportResource {
 	UserRepository userRepository;
 
 	
-	@ConfigProperty(name = "doodle.tmpfolder")
-	String EXCEL_FILE_LOCATION = "/tmp/excelFiles";
+	@ConfigProperty(name = "doodle.tmpfolder", defaultValue = "/tmp/excelFiles")
+	String EXCEL_FILE_LOCATION;
 
 
 	@GET
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	@Path("/polls/{slug}/results")
-	public Response downloadResultsExcel(@PathParam("slug") String slug) throws IOException {
-		Poll poll = pollRepository.findBySlug(slug);
+	public Response downloadResultsExcel(@PathParam("slug") final String slug) throws IOException {
+		final Poll poll = pollRepository.findBySlug(slug);
 		if (poll == null) {
 			return null;
 		}
-		String filePath = createExcelFile(poll, slug);
+		final String filePath = createExcelFile(poll, slug);
 		return getHttpEntityToDownload(filePath, "vnd.ms-excel");
 	}
 
@@ -86,12 +86,12 @@ public class ExportResource {
 	static int fontSize = 9;
 	static Colour borderColour = Colour.WHITE;
 
-	private String createExcelFile(Poll poll, String slug) throws IOException {
-		DateFormat dateFormat = new SimpleDateFormat("dd.MM.yy-HH.mm.ss");
-		Date date = new Date();
-		String fileName = EXCEL_FILE_LOCATION + File.separator + slug + "-" + dateFormat.format(date) + ".xls";
+	private String createExcelFile(final Poll poll, final String slug) throws IOException {
+		final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yy-HH.mm.ss");
+		final Date date = new Date();
+		final String fileName = EXCEL_FILE_LOCATION + File.separator + slug + "-" + dateFormat.format(date) + ".xls";
 
-		File folder = new File(EXCEL_FILE_LOCATION);
+		final File folder = new File(EXCEL_FILE_LOCATION);
 		if (!folder.exists()) {
 			folder.mkdir();
 		}
@@ -101,7 +101,7 @@ public class ExportResource {
 		try {
 			System.out.println("Création du fichier");
 			// Create an Excel file in the file location
-			File file = new File(fileName);
+			final File file = new File(fileName);
 
 			if (!file.createNewFile()) {
 				System.out.println("Erreur lors de la création du fichier");
@@ -109,12 +109,12 @@ public class ExportResource {
 			Wbook = Workbook.createWorkbook(file);
 
 			// Create an Excel sheet
-			WritableSheet mainSheet = Wbook.createSheet("SONDAGE", 0);
+			final WritableSheet mainSheet = Wbook.createSheet("SONDAGE", 0);
 			Wbook.setColourRGB(Colour.BLUE, 53, 37, 230);
 
 			// Format objects
-			WritableCellFormat formatTitle = new WritableCellFormat();
-			WritableFont fontTitle = new WritableFont(WritableFont.TAHOMA, 16, WritableFont.BOLD);
+			final WritableCellFormat formatTitle = new WritableCellFormat();
+			final WritableFont fontTitle = new WritableFont(WritableFont.TAHOMA, 16, WritableFont.BOLD);
 			fontTitle.setColour(Colour.BLUE);
 			formatTitle.setFont(fontTitle);
 
@@ -125,7 +125,7 @@ public class ExportResource {
 			mainSheet.addCell(label);
 
 			// On récupere les users qui ont voté dans ce sondage
-			List<User> users = retrieveUsers(poll);
+			final List<User> users = retrieveUsers(poll);
 
 			// On ecrit les users sur la première colonne
 			writeUsers(poll, Wbook, users);
@@ -138,7 +138,7 @@ public class ExportResource {
 			Wbook.write();
 
 		} catch (Exception e) {
-			System.out.println("Erreur lors de la création du fichier :( " + e.toString());
+			System.out.println("Erreur lors de la création du fichier :( " + e);
 			e.printStackTrace();
 		} finally {
 
@@ -155,7 +155,7 @@ public class ExportResource {
 	}
 
 	private List<User> retrieveUsers(Poll poll) {
-		List<User> users = new ArrayList<>();
+		final List<User> users = new ArrayList<>();
 		// On parcours les choix du poll pour récupérer les users ayant voté
 		if (!poll.getPollChoices().isEmpty()) {
 			for (Choice choice : poll.getPollChoices()) {
@@ -175,29 +175,29 @@ public class ExportResource {
 	private void writeChoices(Poll poll, WritableWorkbook Wbook, List<User> users) throws jxl.write.WriteException {
 		Label label;
 		Number number;
-		WritableSheet mainSheet = Wbook.getSheet(0);
+		final WritableSheet mainSheet = Wbook.getSheet(0);
 
-		List<fr.istic.tlc.domain.Choice> choices = poll.getPollChoices();
+		final List<fr.istic.tlc.domain.Choice> choices = poll.getPollChoices();
 		// List<Choice> choices =
 		// choiceRepository.findAll(Sort.by(Sort.Direction.ASC,"startDate"));
 
 		// Format objects
-		WritableCellFormat formatVoteYes = new WritableCellFormat();
+		final WritableCellFormat formatVoteYes = new WritableCellFormat();
 		formatVoteYes.setAlignment(Alignment.CENTRE);
 		formatVoteYes.setVerticalAlignment(VerticalAlignment.CENTRE);
 		formatVoteYes.setBorder(Border.ALL, BorderLineStyle.THIN, borderColour);
 		formatVoteYes.setBackground(Colour.LIGHT_GREEN);
-		WritableFont fontVoteYes = new WritableFont(WritableFont.TAHOMA, fontSize, WritableFont.NO_BOLD);
+		final WritableFont fontVoteYes = new WritableFont(WritableFont.TAHOMA, fontSize, WritableFont.NO_BOLD);
 		fontVoteYes.setColour(Colour.BLACK);
 		formatVoteYes.setFont(fontVoteYes);
 		// Format objects
 		Wbook.setColourRGB(Colour.LIGHT_ORANGE, 255, 195, 195);
-		WritableCellFormat formatVoteNo = new WritableCellFormat();
+		final WritableCellFormat formatVoteNo = new WritableCellFormat();
 		formatVoteNo.setAlignment(Alignment.CENTRE);
 		formatVoteNo.setVerticalAlignment(VerticalAlignment.CENTRE);
 		formatVoteNo.setBorder(Border.ALL, BorderLineStyle.THIN, borderColour);
 		formatVoteNo.setBackground(Colour.LIGHT_ORANGE);
-		WritableFont fontVoteNo = new WritableFont(WritableFont.TAHOMA, fontSize, WritableFont.NO_BOLD);
+		final WritableFont fontVoteNo = new WritableFont(WritableFont.TAHOMA, fontSize, WritableFont.NO_BOLD);
 		fontVoteNo.setColour(Colour.BLACK);
 		formatVoteNo.setFont(fontVoteNo);
 
@@ -208,7 +208,7 @@ public class ExportResource {
 			writeChoiceDate(Wbook, choices, i);
 
 			// On ecrit les votes
-			List<User> listUsersVotes = choices.get(i).getUsers();
+			final List<User> listUsersVotes = choices.get(i).getUsers();
 			for (int x = 0; x < users.size(); x++) {
 				if (listUsersVotes.contains(users.get(x))) {
 					label = new Label(1 + beginningColumnCell + i, 3 + beginningRowCell + x, "OK", formatVoteYes);
@@ -227,41 +227,41 @@ public class ExportResource {
 
 	private void writeChoiceDate(WritableWorkbook Wbook, List<Choice> choices, int i) throws jxl.write.WriteException {
 		Label label;
-		WritableSheet mainSheet = Wbook.getSheet(0);
-		String month[] = { "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre",
+		final WritableSheet mainSheet = Wbook.getSheet(0);
+		final String[] month = { "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre",
 				"Novembre", "Décembre" };
-		String dayOfWeek[] = { "Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam.", "Dim." };
+		final String[] dayOfWeek = { "Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam.", "Dim." };
 		Wbook.setColourRGB(Colour.BLUE, 53, 37, 230);
 		// Format objects
-		WritableCellFormat formatDate = new WritableCellFormat();
+		final WritableCellFormat formatDate = new WritableCellFormat();
 		formatDate.setAlignment(Alignment.CENTRE);
 		formatDate.setVerticalAlignment(VerticalAlignment.CENTRE);
 		formatDate.setBorder(Border.ALL, BorderLineStyle.THIN, borderColour);
 		formatDate.setBackground(Colour.BLUE);
-		WritableFont fontDate = new WritableFont(WritableFont.TAHOMA, fontSize, WritableFont.NO_BOLD);
+		final WritableFont fontDate = new WritableFont(WritableFont.TAHOMA, fontSize, WritableFont.NO_BOLD);
 		fontDate.setColour(Colour.WHITE);
 		formatDate.setFont(fontDate);
 
 		// On recupère la date de début
-		Choice choice = choices.get(i);
-		Date startDate = choice.getstartDate();
-		Calendar calendar = Calendar.getInstance();
+		final Choice choice = choices.get(i);
+		final Date startDate = choice.getstartDate();
+		final Calendar calendar = Calendar.getInstance();
 		calendar.setTime(startDate);
-		int startYear = calendar.get(Calendar.YEAR);
-		String startMonth = month[calendar.get(Calendar.MONTH)];
-		int startDayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-		String startDayOfWeek = dayOfWeek[calendar.get(Calendar.DAY_OF_WEEK) - 1];
-		int startHourInt = calendar.get(Calendar.HOUR_OF_DAY);
-		String startHour = (startHourInt < 10 ? "0" : "") + startHourInt;
-		int startMinuteInt = calendar.get(Calendar.MINUTE);
-		String startMinute = (startMinuteInt < 10 ? "0" : "") + startMinuteInt;
+		final int startYear = calendar.get(Calendar.YEAR);
+		final String startMonth = month[calendar.get(Calendar.MONTH)];
+		final int startDayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+		final String startDayOfWeek = dayOfWeek[calendar.get(Calendar.DAY_OF_WEEK) - 1];
+		final int startHourInt = calendar.get(Calendar.HOUR_OF_DAY);
+		final String startHour = (startHourInt < 10 ? "0" : "") + startHourInt;
+		final int startMinuteInt = calendar.get(Calendar.MINUTE);
+		final String startMinute = (startMinuteInt < 10 ? "0" : "") + startMinuteInt;
 		// On recupère la date de fin
-		Date endDate = choice.getendDate();
+		final Date endDate = choice.getendDate();
 		calendar.setTime(endDate);
-		int endHourInt = calendar.get(Calendar.HOUR_OF_DAY);
-		String endHour = (endHourInt < 10 ? "0" : "") + endHourInt;
-		int endMinuteInt = calendar.get(Calendar.MINUTE);
-		String endMinute = (endMinuteInt < 10 ? "0" : "") + endMinuteInt;
+		final int endHourInt = calendar.get(Calendar.HOUR_OF_DAY);
+		final String endHour = (endHourInt < 10 ? "0" : "") + endHourInt;
+		final int endMinuteInt = calendar.get(Calendar.MINUTE);
+		final String endMinute = (endMinuteInt < 10 ? "0" : "") + endMinuteInt;
 
 		label = new Label(1 + beginningColumnCell + i, beginningRowCell, startMonth + " " + startYear, formatDate);
 		mainSheet.addCell(label);
@@ -276,17 +276,17 @@ public class ExportResource {
 	private void writeUsers(Poll poll, WritableWorkbook Wbook, List<User> users) throws jxl.write.WriteException {
 		Label label;
 
-		WritableSheet mainSheet = Wbook.getSheet(0);
+		final WritableSheet mainSheet = Wbook.getSheet(0);
 		mainSheet.setColumnView(beginningColumnCell, 25);
 
 		// Format objects
-		WritableCellFormat formatUser = new WritableCellFormat();
+		final WritableCellFormat formatUser = new WritableCellFormat();
 		formatUser.setAlignment(Alignment.RIGHT);
 		formatUser.setVerticalAlignment(VerticalAlignment.CENTRE);
 		formatUser.setBorder(Border.ALL, BorderLineStyle.THIN, borderColour);
 
 		formatUser.setBackground(Colour.GRAY_25);
-		WritableFont fontUser = new WritableFont(WritableFont.TAHOMA, fontSize, WritableFont.NO_BOLD);
+		final WritableFont fontUser = new WritableFont(WritableFont.TAHOMA, fontSize, WritableFont.NO_BOLD);
 		fontUser.setColour(Colour.BLACK);
 		formatUser.setFont(fontUser);
 
@@ -300,15 +300,15 @@ public class ExportResource {
 	}
 
 	private Response getHttpEntityToDownload(String filePath, String fileType) throws IOException {
-		File file = getFile(filePath);
+		final File file = getFile(filePath);
 
 		// header.set("Content-Disposition", "inline; filename=" + file.getName());
-		return Response.ok(((Object) file), MediaType.APPLICATION_OCTET_STREAM)
+		return Response.ok(file, MediaType.APPLICATION_OCTET_STREAM)
 				.header("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"").build();
 	}
 
 	private File getFile(String filePath) throws FileNotFoundException {
-		File file = new File(filePath);
+		final File file = new File(filePath);
 		if (!file.exists()) {
 			throw new FileNotFoundException("file with path: " + filePath + " was not found.");
 		}

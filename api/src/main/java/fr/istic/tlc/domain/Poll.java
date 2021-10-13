@@ -32,11 +32,11 @@ public class Poll {
     private boolean has_meal;
     private String slug = Utils.getInstance().generateSlug(24);
     private String slugAdmin = Utils.getInstance().generateSlug(24);
-    private String tlkURL = "https://tlk.io/"+Utils.getInstance().generateSlug(12);
+    private String tlkURL = "https://tlk.io/" + Utils.getInstance().generateSlug(12);
     public boolean clos = false;
-    
 
-	@CreationTimestamp
+
+    @CreationTimestamp
     private Date createdAt;
 
     @UpdateTimestamp
@@ -47,21 +47,22 @@ public class Poll {
     @OrderBy("startDate ASC")
     List<Choice> pollChoices;
 
-    
-    @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.REMOVE,CascadeType.REFRESH})
+
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.REFRESH})
     Choice selectedChoice;
 
-    @OneToMany(cascade =  {CascadeType.PERSIST,CascadeType.REMOVE,CascadeType.REFRESH})
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.REFRESH})
     @JoinColumn(name = "pollID")
     List<Comment> pollComments = new ArrayList<>();
 
-    @OneToMany(cascade =  {CascadeType.PERSIST,CascadeType.REMOVE,CascadeType.REFRESH})
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.REFRESH})
     @JoinColumn(name = "pollID")
     List<MealPreference> pollMealPreferences = new ArrayList<>();
 
     private String padURL;
 
-    public Poll(){}
+    public Poll() {
+    }
 
     public Poll(String title, String location, String description, boolean has_meal, List<Choice> pollChoices) {
         this.title = title;
@@ -71,21 +72,29 @@ public class Poll {
         this.pollChoices = pollChoices;
     }
 
-    public void addChoice(Choice choice){
+    public void addChoice(Choice choice) {
         this.pollChoices.add(choice);
     }
 
-    public void removeChoice(Choice choice){
+    public void removeChoice(Choice choice) {
         this.pollChoices.remove(choice);
     }
 
-    public void addComment(Comment comment){ this.pollComments.add(comment);}
+    public void addComment(Comment comment) {
+        this.pollComments.add(comment);
+    }
 
-    public void removeComment(Comment comment){ this.pollComments.remove(comment);}
+    public void removeComment(Comment comment) {
+        this.pollComments.remove(comment);
+    }
 
-    public void addMealPreference(MealPreference mealPreference){ this.pollMealPreferences.add(mealPreference);}
+    public void addMealPreference(MealPreference mealPreference) {
+        this.pollMealPreferences.add(mealPreference);
+    }
 
-    public void removeComment(MealPreference mealPreference){ this.pollMealPreferences.remove(mealPreference);}
+    public void removeComment(MealPreference mealPreference) {
+        this.pollMealPreferences.remove(mealPreference);
+    }
 
     public Long getId() {
         return id;
@@ -119,7 +128,7 @@ public class Poll {
         this.id = id;
     }
 
-   public String getTitle() {
+    public String getTitle() {
         return title;
     }
 
@@ -184,29 +193,29 @@ public class Poll {
     }
 
     public Choice getSelectedChoice() {
-		return selectedChoice;
-	}
+        return selectedChoice;
+    }
 
-	public void setSelectedChoice(Choice selectedChoice) {
-		this.selectedChoice = selectedChoice;
-	}
+    public void setSelectedChoice(Choice selectedChoice) {
+        this.selectedChoice = selectedChoice;
+    }
 
-	public String getPadURL() {
+    public String getPadURL() {
         return this.padURL;
     }
 
-    
-    public void setPadURL(String padURL) {
-        this.padURL=padURL;
-    }
-    
-    public boolean isClos() {
-		return clos;
-	}
 
-	public void setClos(boolean clos) {
-		this.clos = clos;
-	}
+    public void setPadURL(String padURL) {
+        this.padURL = padURL;
+    }
+
+    public boolean isClos() {
+        return clos;
+    }
+
+    public void setClos(boolean clos) {
+        this.clos = clos;
+    }
 
 
     @Override

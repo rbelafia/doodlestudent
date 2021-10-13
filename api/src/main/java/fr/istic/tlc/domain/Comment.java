@@ -1,6 +1,9 @@
 package fr.istic.tlc.domain;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 public class Comment {
@@ -11,10 +14,11 @@ public class Comment {
     private String content;
     private String auteur;
 
-    public Comment(){}
+    public Comment() {
+    }
 
-    public Comment(String content){
-        this.content=content;
+    public Comment(String content) {
+        this.content = content;
     }
 
     public Long getId() {
@@ -34,12 +38,12 @@ public class Comment {
     }
 
     public String getAuteur() {
-		return auteur;
-	}
+        return auteur;
+    }
 
-	public void setAuteur(String auteur) {
-		this.auteur = auteur;
-	}
+    public void setAuteur(String auteur) {
+        this.auteur = auteur;
+    }
 
 
     @Override

@@ -34,26 +34,26 @@ public class CommentResourceEx {
     @GetMapping("polls/{slug}/comments")
     public ResponseEntity<Object> getAllCommentsFromPoll(@PathVariable String slug) {
         // On vérifie que le poll existe
-       Poll optPoll = pollRepository.findBySlug(slug);
-        if(optPoll== null){
+        final Poll optPoll = pollRepository.findBySlug(slug);
+        if (optPoll == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(optPoll.getPollComments(),HttpStatus.OK);
+        return new ResponseEntity<>(optPoll.getPollComments(), HttpStatus.OK);
     }
 
     @GetMapping("polls/{slug}/comments/{idComment}")
-    public ResponseEntity<Object> getCommentFromPoll(@PathVariable String slug, @PathVariable long idComment){
+    public ResponseEntity<Object> getCommentFromPoll(@PathVariable String slug, @PathVariable long idComment) {
         // On vérifie que le poll et le comment existe
-       Poll optPoll = pollRepository.findBySlug(slug);
-        Comment optComment = commentRepository.findById(idComment);
-        if(optPoll== null || optComment== null){
+        final Poll optPoll = pollRepository.findBySlug(slug);
+        final Comment optComment = commentRepository.findById(idComment);
+        if (optPoll == null || optComment == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         // On vérifie que le comment appartienne bien au poll
-        if (!optPoll.getPollComments().contains(optComment)){
+        if (!optPoll.getPollComments().contains(optComment)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(optComment,HttpStatus.OK);
+        return new ResponseEntity<>(optComment, HttpStatus.OK);
     }
 
    /* @PostMapping("polls/{slug}/comments/{idUser}")

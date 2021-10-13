@@ -35,34 +35,34 @@ public class MealPreferenceResource {
     @GetMapping("polls/{slug}/mealpreferences")
     public ResponseEntity<Object> getAllMealPreferencesFromPoll(@PathVariable String slug) {
         // On vérifie que le poll existe
-        Poll optPoll = pollRepository.findBySlug(slug);
-        if(optPoll == null){
+        final Poll optPoll = pollRepository.findBySlug(slug);
+        if (optPoll == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(optPoll.getPollMealPreferences(),HttpStatus.OK);
+        return new ResponseEntity<>(optPoll.getPollMealPreferences(), HttpStatus.OK);
     }
 
     @GetMapping("polls/{slug}/mealpreference/{idMealPreference}")
-    public ResponseEntity<Object> getMealPreferenceFromPoll(@PathVariable String slug, @PathVariable long idMealPreference){
+    public ResponseEntity<Object> getMealPreferenceFromPoll(@PathVariable String slug, @PathVariable long idMealPreference) {
         // On vérifie que le poll et la meal preference existe
-        Poll optPoll = pollRepository.findBySlug(slug);
-        MealPreference optMealPreference = mealPreferenceRepository.findById(idMealPreference);
-        if(optPoll == null || optMealPreference == null){
+        final Poll optPoll = pollRepository.findBySlug(slug);
+        final MealPreference optMealPreference = mealPreferenceRepository.findById(idMealPreference);
+        if (optPoll == null || optMealPreference == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         // On vérifie que la meal preference appartienne bien au poll
-        if (!optPoll.getPollMealPreferences().contains(optMealPreference)){
+        if (!optPoll.getPollMealPreferences().contains(optMealPreference)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(optMealPreference,HttpStatus.OK);
+        return new ResponseEntity<>(optMealPreference, HttpStatus.OK);
     }
 
     @PostMapping("polls/{slug}/mealpreference/{idUser}")
-    public ResponseEntity<Object> createMealPreference(@Valid @RequestBody MealPreference mealPreference, @PathVariable String slug, @PathVariable long idUser){
+    public ResponseEntity<Object> createMealPreference(@Valid @RequestBody MealPreference mealPreference, @PathVariable String slug, @PathVariable long idUser) {
         // On vérifie que le poll et le User existe
-        Poll poll = pollRepository.findBySlug(slug);
-        User user = userRepository.findById(idUser);
-        if (poll == null || user == null){
+        final Poll poll = pollRepository.findBySlug(slug);
+        final User user = userRepository.findById(idUser);
+        if (poll == null || user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         // On set le user dans la meal preference

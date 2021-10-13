@@ -25,49 +25,55 @@ public class User {
     private String icsurl;
 
 
-	@JsonIgnore
+    @JsonIgnore
     @ManyToMany(mappedBy = "users")
     List<Choice> userChoices = new ArrayList<>();
 
 
     @JsonIgnore
-    @OneToMany(mappedBy="user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     List<MealPreference> userMealPreferences = new ArrayList<>();
 
-    public User(){}
+    public User() {
+    }
 
-    public User(String username) {	
+    public User(String username) {
         this.username = username;
     }
 
-    public void addChoice(Choice choice){
+    public void addChoice(Choice choice) {
         this.userChoices.add(choice);
     }
-    public String getMail() {
-		return mail;
-	}
 
-	public void setMail(String mail) {
-		this.mail = mail;
-	}
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
 
 
     public String getIcsurl() {
-		return icsurl;
-	}
+        return icsurl;
+    }
 
-	public void setIcsurl(String icsurl) {
-		this.icsurl = icsurl;
-	}
+    public void setIcsurl(String icsurl) {
+        this.icsurl = icsurl;
+    }
 
-	public void removeChoice(Choice choice){
+    public void removeChoice(Choice choice) {
         this.userChoices.remove(choice);
     }
 
 
-    public void addMealPreference (MealPreference mealPreference) {this.userMealPreferences.add(mealPreference);}
+    public void addMealPreference(MealPreference mealPreference) {
+        this.userMealPreferences.add(mealPreference);
+    }
 
-    public void removeMealPreference (MealPreference mealPreference) {this.userMealPreferences.remove(mealPreference);}
+    public void removeMealPreference(MealPreference mealPreference) {
+        this.userMealPreferences.remove(mealPreference);
+    }
 
     public Long getId() {
         return id;

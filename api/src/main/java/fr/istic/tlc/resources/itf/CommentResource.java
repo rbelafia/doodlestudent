@@ -6,5 +6,5 @@ import io.quarkus.hibernate.orm.rest.data.panache.PanacheRepositoryResource;
 import io.quarkus.rest.data.panache.ResourceProperties;
 
 @ResourceProperties(path = "/api/comment")
-public interface CommentResource  extends PanacheRepositoryResource<CommentRepository,   Comment,Long> {
+public interface CommentResource extends PanacheRepositoryResource<CommentRepository, Comment, Long> {
 }

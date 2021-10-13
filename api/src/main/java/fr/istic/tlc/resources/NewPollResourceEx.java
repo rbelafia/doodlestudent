@@ -30,157 +30,159 @@ import fr.istic.tlc.services.SendEmail;
 @Path("/api/poll")
 public class NewPollResourceEx {
 
-	@Inject
-	PollRepository pollRep;
+    @Inject
+    PollRepository pollRep;
 
-	@Inject
-	UserRepository userRep;
+    @Inject
+    UserRepository userRep;
 
-	@Inject
-	ChoiceRepository choiceRep;
+    @Inject
+    ChoiceRepository choiceRep;
 
-	@Inject
-	MealPreferenceRepository mealprefRep;
+    @Inject
+    MealPreferenceRepository mealprefRep;
 
-	@Inject
-	CommentRepository commentRep;
-	
-	@Inject
-	SendEmail sendmail;
+    @Inject
+    CommentRepository commentRep;
 
-	@Path("/slug/{slug}")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public Poll getPollBySlug(@PathParam("slug") String slug) {
-		Poll p = pollRep.findBySlug(slug);
-		if (p != null)
+    @Inject
+    SendEmail sendmail;
+
+    @Path("/slug/{slug}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Poll getPollBySlug(@PathParam("slug") String slug) {
+        final Poll p = pollRep.findBySlug(slug);
+		if (p != null) {
 			p.getPollComments().clear();
-		p.setSlugAdmin("");
-		return p;
-	}
-
-	@Path("/aslug/{aslug}")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public Poll getPollByASlug(@PathParam("aslug") String aslug) {
-		return pollRep.findByAdminSlug(aslug);
-	}
-
-	@Path("/comment/{slug}")
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Transactional
-	@Produces(MediaType.APPLICATION_JSON)
-	public Comment createComment4Poll(@PathParam("slug") String slug, Comment c) {
-		this.commentRep.persist(c);
-		Poll p = pollRep.findBySlug(slug);
-		p.addComment(c);
-		this.pollRep.persistAndFlush(p);
-		return c;
-
-	}
-
-	@PUT
-	@Path("/update1")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Transactional
-	@Produces(MediaType.APPLICATION_JSON)
-	public Poll updatePoll(Poll p) {
-		System.err.println( "p " + p);
-		Poll p1 = pollRep.findById(p.getId());
-		List<Choice> choicesToRemove = new ArrayList<Choice>();
-		for (Choice c : p1.getPollChoices()) {
-			if (!p.getPollChoices().contains(c)) {
-
-				choicesToRemove.add(c);
-				System.err.println("toremove " + c.getId());
-			}
-
 		}
-		for (Choice c : p.getPollChoices()) {
-			if (c.getId() != null) {
-				this.choiceRep.getEntityManager().merge(c);
-			} else {
-				this.choiceRep.getEntityManager().persist(c);
-			}
+        p.setSlugAdmin("");
+        return p;
+    }
 
-		}
-		for (Choice c : choicesToRemove) {
-			if (c.equals(p1.getSelectedChoice())) {
-				p.setSelectedChoice(null);
-				p1.setSelectedChoice(null);
-				p.setClos(false);
-			}
-			for (User u : c.getUsers()) {
-				u.getUserChoices().remove(c);
-			}
-			c.getUsers().clear();
-			this.choiceRep.delete(c);
+    @Path("/aslug/{aslug}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Poll getPollByASlug(@PathParam("aslug") String aslug) {
+        return pollRep.findByAdminSlug(aslug);
+    }
 
-		}
+    @Path("/comment/{slug}")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    @Produces(MediaType.APPLICATION_JSON)
+    public Comment createComment4Poll(@PathParam("slug") String slug, Comment c) {
+        this.commentRep.persist(c);
+        final Poll p = pollRep.findBySlug(slug);
+        p.addComment(c);
+        this.pollRep.persistAndFlush(p);
+        return c;
 
-		for (Choice c : p.getPollChoices()) {
-			System.err.println("tomerge " + c.getId());
-		}
+    }
 
-		Poll p2 = this.pollRep.getEntityManager().merge(p);
-		return p2;
+    @PUT
+    @Path("/update1")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    @Produces(MediaType.APPLICATION_JSON)
+    public Poll updatePoll(Poll p) {
+        System.err.println("p " + p);
+        final Poll p1 = pollRep.findById(p.getId());
+        final List<Choice> choicesToRemove = new ArrayList<Choice>();
+        for (Choice c : p1.getPollChoices()) {
+            if (!p.getPollChoices().contains(c)) {
 
-	}
+                choicesToRemove.add(c);
+                System.err.println("toremove " + c.getId());
+            }
 
-	@Path("/choiceuser")
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Transactional
-	public User addChoiceUser(ChoiceUser userChoice) {
-		User u = this.userRep.find("mail", userChoice.getMail()).firstResult();
-		if (u == null) {
-			u = new User();
-			u.setUsername(userChoice.getUsername());
-			u.setIcsurl(userChoice.getIcs());
-			u.setMail(userChoice.getMail());
-			this.userRep.persist(u);
-		}
-		
+        }
+        for (Choice c : p.getPollChoices()) {
+            if (c.getId() != null) {
+                this.choiceRep.getEntityManager().merge(c);
+            } else {
+                this.choiceRep.getEntityManager().persist(c);
+            }
 
-		if (userChoice.getPref() != null && !"".equals(userChoice.getPref())) {
-			MealPreference mp = new MealPreference();
-			mp.setContent(userChoice.getPref());
-			mp.setUser(u);
-			this.mealprefRep.persist(mp);
-		}
-		for (Long choiceId : userChoice.getChoices()) {
-			Choice c = this.choiceRep.findById(choiceId);
-			c.addUser(u);
-			this.choiceRep.persistAndFlush(c);
-		}
-		return u;
-	}
+        }
+        for (Choice c : choicesToRemove) {
+            if (c.equals(p1.getSelectedChoice())) {
+                p.setSelectedChoice(null);
+                p1.setSelectedChoice(null);
+                p.setClos(false);
+            }
+            for (User u : c.getUsers()) {
+                u.getUserChoices().remove(c);
+            }
+            c.getUsers().clear();
+            this.choiceRep.delete(c);
 
-	@Path("/selectedchoice/{choiceid}")
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Transactional
-	public void closePoll(@PathParam("choiceid") String choiceid) {
-		Choice c = choiceRep.findById(Long.parseLong(choiceid));
-		Poll p = this.pollRep.find("select p from Poll as p join p.pollChoices as c where c.id= ?1", c.getId())
-				.firstResult();
-		p.setClos(true);
-		p.setSelectedChoice(c);
-		this.pollRep.persist(p);
-		this.sendmail.sendASimpleEmail(p);
-		// TODO Send Email
+        }
 
-	}
+        for (Choice c : p.getPollChoices()) {
+            System.err.println("tomerge " + c.getId());
+        }
 
-	@GET()
-	@Path("polls/{slug}/comments")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<Comment> getAllCommentsFromPoll(@PathParam("slug") String slug) {
-		Poll p = this.pollRep.findBySlug(slug);
-		if (p!= null)
+        final Poll p2 = this.pollRep.getEntityManager().merge(p);
+        return p2;
+
+    }
+
+    @Path("/choiceuser")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    public User addChoiceUser(ChoiceUser userChoice) {
+        User u = this.userRep.find("mail", userChoice.getMail()).firstResult();
+        if (u == null) {
+            u = new User();
+            u.setUsername(userChoice.getUsername());
+            u.setIcsurl(userChoice.getIcs());
+            u.setMail(userChoice.getMail());
+            this.userRep.persist(u);
+        }
+
+
+        if (userChoice.getPref() != null && !"".equals(userChoice.getPref())) {
+            final MealPreference mp = new MealPreference();
+            mp.setContent(userChoice.getPref());
+            mp.setUser(u);
+            this.mealprefRep.persist(mp);
+        }
+        for (Long choiceId : userChoice.getChoices()) {
+            final Choice c = this.choiceRep.findById(choiceId);
+            c.addUser(u);
+            this.choiceRep.persistAndFlush(c);
+        }
+        return u;
+    }
+
+    @Path("/selectedchoice/{choiceid}")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    public void closePoll(@PathParam("choiceid") String choiceid) {
+        final Choice c = choiceRep.findById(Long.parseLong(choiceid));
+        final Poll p = this.pollRep.find("select p from Poll as p join p.pollChoices as c where c.id= ?1", c.getId())
+                .firstResult();
+        p.setClos(true);
+        p.setSelectedChoice(c);
+        this.pollRep.persist(p);
+        this.sendmail.sendASimpleEmail(p);
+        // TODO Send Email
+
+    }
+
+    @GET()
+    @Path("polls/{slug}/comments")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Comment> getAllCommentsFromPoll(@PathParam("slug") String slug) {
+        final Poll p = this.pollRep.findBySlug(slug);
+		if (p != null) {
 			return p.getPollComments();
-		return null;
-	}
+		}
+        return null;
+    }
 
 }

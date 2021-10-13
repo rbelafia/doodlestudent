@@ -36,19 +36,19 @@ public class Choice {
     private List<User> users;
 
 
-    public Choice(){}
+    public Choice() { }
 
-    public Choice(Date startDate, Date endDate, List<User> users) {
+    public Choice(final Date startDate, final Date endDate, final List<User> users) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.users = users;
     }
 
-    public void addUser(User user){
+    public void addUser(final User user) {
         users.add(user);
     }
 
-    public void removeUser(User user){
+    public void removeUser(final User user) {
         users.remove(user);
     }
 
@@ -56,7 +56,7 @@ public class Choice {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -64,7 +64,7 @@ public class Choice {
         return startDate;
     }
 
-    public void setstartDate(Date startDate) {
+    public void setstartDate(final Date startDate) {
         this.startDate = startDate;
     }
 
@@ -72,7 +72,7 @@ public class Choice {
         return endDate;
     }
 
-    public void setendDate(Date endDate) {
+    public void setendDate(final Date endDate) {
         this.endDate = endDate;
     }
 
@@ -80,7 +80,7 @@ public class Choice {
         return users;
     }
 
-    public void setUsers(List<User> users) {
+    public void setUsers(final List<User> users) {
         this.users = users;
     }
 
@@ -102,19 +102,21 @@ public class Choice {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Choice other = (Choice) obj;
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+            return true;
+        }
+		if (obj == null) {
+            return false;
+        }
+		if (getClass() != obj.getClass()) {
+            return false;
+        }
+		final Choice other = (Choice) obj;
 		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
-	}
+            return other.id == null;
+		} else {
+            return id.equals(other.id);
+        }
+    }
 }

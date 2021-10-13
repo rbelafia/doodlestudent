@@ -6,5 +6,5 @@ import io.quarkus.hibernate.orm.rest.data.panache.PanacheRepositoryResource;
 import io.quarkus.rest.data.panache.ResourceProperties;
 
 @ResourceProperties(path = "/api/user")
-public interface UserResource  extends PanacheRepositoryResource<UserRepository, User,Long> {
+public interface UserResource extends PanacheRepositoryResource<UserRepository, User, Long> {
 }

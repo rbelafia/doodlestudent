@@ -30,153 +30,153 @@ import net.gjerull.etherpad.client.EPLiteClient;
 @RequestMapping("/api")
 public class PollResourceEx {
 
-	@Autowired
-	PollRepository pollRepository;
+    @Autowired
+    PollRepository pollRepository;
 
-	@ConfigProperty(name = "doodle.usepad", defaultValue = "true")
-	boolean usePad;
-	@ConfigProperty(name = "doodle.internalPadUrl", defaultValue="http://etherpad:9001/")
-	String padUrl;
-	@ConfigProperty(name = "doodle.externalPadUrl", defaultValue="http://etherpad.diverse-team.fr/")
-	String externalPadUrl;
-	@ConfigProperty(name = "doodle.padApiKey", defaultValue = "")
-	String apikey;
+    @ConfigProperty(name = "doodle.usepad", defaultValue = "true")
+    boolean usePad;
+    @ConfigProperty(name = "doodle.internalPadUrl", defaultValue = "http://etherpad:9001/")
+    String padUrl;
+    @ConfigProperty(name = "doodle.externalPadUrl", defaultValue = "http://etherpad.diverse-team.fr/")
+    String externalPadUrl;
+    @ConfigProperty(name = "doodle.padApiKey", defaultValue = "")
+    String apikey;
 
-	EPLiteClient client;
+    EPLiteClient client;
 
-	@GetMapping("/polls")
-	public ResponseEntity<List<Poll>> retrieveAllpolls() {
-		// On récupère la liste de tous les poll qu'on trie ensuite par titre
-		List<Poll> polls = pollRepository.findAll(Sort.by("title", Sort.Direction.Ascending)).list();
-		return new ResponseEntity<>(polls, HttpStatus.OK);
-	}
+    @GetMapping("/polls")
+    public ResponseEntity<List<Poll>> retrieveAllpolls() {
+        // On récupère la liste de tous les poll qu'on trie ensuite par titre
+        final List<Poll> polls = pollRepository.findAll(Sort.by("title", Sort.Direction.Ascending)).list();
+        return new ResponseEntity<>(polls, HttpStatus.OK);
+    }
 
-	@GetMapping("/polls/{slug}")
-	public ResponseEntity<Poll> retrievePoll(@PathVariable String slug, @RequestParam(required = false) String token) {
-		// On vérifie que le poll existe
-		Poll poll = pollRepository.findBySlug(slug);
-		if (poll == null) {
+    @GetMapping("/polls/{slug}")
+    public ResponseEntity<Poll> retrievePoll(@PathVariable String slug, @RequestParam(required = false) String token) {
+        // On vérifie que le poll existe
+        final Poll poll = pollRepository.findBySlug(slug);
+        if (poll == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        // Si un token est donné, on vérifie qu'il soit bon
+        if (token != null && !poll.getSlugAdmin().equals(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        poll.setSlugAdmin("");
+        return new ResponseEntity<>(poll, HttpStatus.OK);
+    }
+
+    @GetMapping("/polls/{slug}/pad")
+    public ResponseEntity<String> retrievePadURL(@PathVariable("slug") String slug) {
+        // On vérifie que le poll existe
+        final Poll poll = pollRepository.findBySlug(slug);
+        if (poll == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(poll.getPadURL(), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/polls/{slug}")
+    @Transactional
+    public ResponseEntity<Poll> deletePoll(@PathVariable("slug") String slug, @RequestParam String token) {
+        // On vérifie que le poll existe
+        final Poll poll = pollRepository.findBySlug(slug);
+        if (poll == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        // On vérifie que le token soit bon
+        if (!poll.getSlugAdmin().equals(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        // On supprime tous les choix du poll
+        // Fait automatiquement par le cascade type ALL
+
+        // On supprime tous les commentaires du poll
+        // Fait automatiquement par le cascade type ALL
+
+        // On supprime le pad
+        if (client == null) {
+            client = new EPLiteClient(padUrl, apikey);
+        }
+
+        client.deletePad(getPadId(poll));
+        // On supprime le poll de la bdd
+        pollRepository.deleteById(poll.getId());
+        return new ResponseEntity<>(poll, HttpStatus.OK);
+    }
+
+
+    @PostMapping("/polls")
+    @Transactional
+    public ResponseEntity<Poll> createPoll(@Valid @RequestBody Poll poll) {
+        // On enregistre le poll dans la bdd
+        final String padId = Utils.getInstance().generateSlug(15);
+        if (this.usePad) {
+            if (client == null) {
+                client = new EPLiteClient(padUrl, apikey);
+            }
+            client.createPad(padId);
+            initPad(poll.getTitle(), poll.getLocation(), poll.getDescription(), client, padId);
+            poll.setPadURL(externalPadUrl + "p/" + padId);
+        }
+        pollRepository.persist(poll);
+        return new ResponseEntity<>(poll, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/polls/{slug}")
+    @Transactional
+    public ResponseEntity<Object> updatePoll(@Valid @RequestBody Poll poll, @PathVariable String slug,
+                                             @RequestParam String token) {
+        // On vérifie que le poll existe
+        final Poll optionalPoll = pollRepository.findBySlug(slug);
+		if (optionalPoll == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		// Si un token est donné, on vérifie qu'il soit bon
-		if (token != null && !poll.getSlugAdmin().equals(token)) {
-			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		}
-		poll.setSlugAdmin("");
-		return new ResponseEntity<>(poll, HttpStatus.OK);
-	}
+        // On vérifie que le token soit bon
+        if (!optionalPoll.getSlugAdmin().equals(token)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        // On met au poll le bon id et les bons slugs
+        final Poll ancientPoll = optionalPoll;
+        // On se connecte au pad
+        final String padId = getPadId(ancientPoll);
 
-	@GetMapping("/polls/{slug}/pad")
-	public ResponseEntity<String> retrievePadURL(@PathVariable("slug") String slug) {
-		// On vérifie que le poll existe
-		Poll poll = pollRepository.findBySlug(slug);
-		if (poll == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<>(poll.getPadURL(), HttpStatus.OK);
-	}
+        // On sauvegarde les anciennes données pour mettre à jour le pad
+        final String title = ancientPoll.getTitle();
+        final String location = ancientPoll.getLocation();
+        final String description = ancientPoll.getDescription();
 
-	@DeleteMapping("/polls/{slug}")
-	@Transactional
-	public ResponseEntity<Poll> deletePoll(@PathVariable("slug") String slug, @RequestParam String token) {
-		// On vérifie que le poll existe
-		Poll poll = pollRepository.findBySlug(slug);
-		if (poll == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		// On vérifie que le token soit bon
-		if (!poll.getSlugAdmin().equals(token)) {
-			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		}
-		// On supprime tous les choix du poll
-		// Fait automatiquement par le cascade type ALL
+        // On met à jour l'ancien poll
+        if (poll.getTitle() != null) {
+            ancientPoll.setTitle(poll.getTitle());
+        }
+        if (poll.getLocation() != null) {
+            ancientPoll.setLocation(poll.getLocation());
+        }
+        if (poll.getDescription() != null) {
+            ancientPoll.setDescription(poll.getDescription());
+        }
+        ancientPoll.setHas_meal(poll.isHas_meal());
+        // On update le pad
+        String ancientPad = (String) client.getText(padId).get("text");
+        ancientPad = ancientPad.replaceFirst(title, ancientPoll.getTitle());
+        ancientPad = ancientPad.replaceFirst(location, ancientPoll.getLocation());
+        ancientPad = ancientPad.replaceFirst(description, ancientPoll.getDescription());
+        client.setText(padId, ancientPad);
+        // On enregistre le poll dans la bdd
+        final Poll updatedPoll = pollRepository.getEntityManager().merge(ancientPoll);
+        return new ResponseEntity<>(updatedPoll, HttpStatus.OK);
+    }
 
-		// On supprime tous les commentaires du poll
-		// Fait automatiquement par le cascade type ALL
+    private static void initPad(String pollTitle, String pollLocation, String pollDescription, EPLiteClient client,
+                                String padId) {
+        final String str = pollTitle + '\n' + "Localisation : " + pollLocation + '\n' + "Description : "
+                + pollDescription + '\n';
+        client.setText(padId, str);
+    }
 
-		// On supprime le pad
-		if (client == null) {
-			client = new EPLiteClient(padUrl, apikey);
-		}
-
-		client.deletePad(getPadId(poll));
-		// On supprime le poll de la bdd
-		pollRepository.deleteById(poll.getId());
-		return new ResponseEntity<>(poll, HttpStatus.OK);
-	}
-
-
-	
-	@PostMapping("/polls")
-	@Transactional
-	public ResponseEntity<Poll> createPoll(@Valid @RequestBody Poll poll) {
-		// On enregistre le poll dans la bdd
-		String padId = Utils.getInstance().generateSlug(15);
-		if (this.usePad) {
-			if (client == null) {
-				client = new EPLiteClient(padUrl, apikey);
-			}
-			client.createPad(padId);
-			initPad(poll.getTitle(), poll.getLocation(), poll.getDescription(), client, padId);
-			poll.setPadURL(externalPadUrl + "p/" + padId);
-		} 
-		pollRepository.persist(poll);
-		return new ResponseEntity<>(poll, HttpStatus.CREATED);
-	}
-
-	@PutMapping("/polls/{slug}")
-	@Transactional
-	public ResponseEntity<Object> updatePoll(@Valid @RequestBody Poll poll, @PathVariable String slug,
-			@RequestParam String token) {
-		// On vérifie que le poll existe
-		Poll optionalPoll = pollRepository.findBySlug(slug);
-		if (optionalPoll == null)
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		// On vérifie que le token soit bon
-		if (!optionalPoll.getSlugAdmin().equals(token)) {
-			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		}
-		// On met au poll le bon id et les bons slugs
-		Poll ancientPoll = optionalPoll;
-		// On se connecte au pad
-		String padId = getPadId(ancientPoll);
-
-		// On sauvegarde les anciennes données pour mettre à jour le pad
-		String title = ancientPoll.getTitle();
-		String location = ancientPoll.getLocation();
-		String description = ancientPoll.getDescription();
-
-		// On met à jour l'ancien poll
-		if (poll.getTitle() != null) {
-			ancientPoll.setTitle(poll.getTitle());
-		}
-		if (poll.getLocation() != null) {
-			ancientPoll.setLocation(poll.getLocation());
-		}
-		if (poll.getDescription() != null) {
-			ancientPoll.setDescription(poll.getDescription());
-		}
-		ancientPoll.setHas_meal(poll.isHas_meal());
-		// On update le pad
-		String ancientPad = (String) client.getText(padId).get("text");
-		ancientPad = ancientPad.replaceFirst(title, ancientPoll.getTitle());
-		ancientPad = ancientPad.replaceFirst(location, ancientPoll.getLocation());
-		ancientPad = ancientPad.replaceFirst(description, ancientPoll.getDescription());
-		client.setText(padId, ancientPad);
-		// On enregistre le poll dans la bdd
-		Poll updatedPoll = pollRepository.getEntityManager().merge(ancientPoll);
-		return new ResponseEntity<>(updatedPoll, HttpStatus.OK);
-	}
-
-	private static void initPad(String pollTitle, String pollLocation, String pollDescription, EPLiteClient client,
-			String padId) {
-		final String str = pollTitle + '\n' + "Localisation : " + pollLocation + '\n' + "Description : "
-				+ pollDescription + '\n';
-		client.setText(padId, str);
-	}
-
-	private static String getPadId(Poll poll) {
-		//return poll.getPadURL().substring(poll.getPadURL().length() - 6);
-		return poll.getPadURL().substring(poll.getPadURL().lastIndexOf('/') + 1);
-	}
+    private static String getPadId(Poll poll) {
+        //return poll.getPadURL().substring(poll.getPadURL().length() - 6);
+        return poll.getPadURL().substring(poll.getPadURL().lastIndexOf('/') + 1);
+    }
 }

@@ -1,18 +1,5 @@
 package fr.istic.tlc.services;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
 import fr.istic.tlc.dao.PollRepository;
 import fr.istic.tlc.domain.Poll;
 import fr.istic.tlc.domain.User;
@@ -35,91 +22,100 @@ import net.fortuna.ical4j.model.property.Version;
 import net.fortuna.ical4j.util.MapTimeZoneCache;
 import net.fortuna.ical4j.util.RandomUidGenerator;
 import net.fortuna.ical4j.util.UidGenerator;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 @ApplicationScoped
 public class SendEmail {
 
-	@Inject
-	Mailer mailer;
+    @Inject
+    Mailer mailer;
 
-	@Inject
-	PollRepository pollRep;
+    @Inject
+    PollRepository pollRep;
 
-	@ConfigProperty(name = "doodle.organizermail", defaultValue = "test@test.fr")
-	String organizermail;
+    @ConfigProperty(name = "doodle.organizermail", defaultValue = "test@test.fr")
+    String organizermail;
 
-	public void sendASimpleEmail(Poll p )  {
-		// Create a default MimeMessage object.
-		System.setProperty("net.fortuna.ical4j.timezone.cache.impl", MapTimeZoneCache.class.getName());
+    public void sendASimpleEmail(Poll p) {
+        // Create a default MimeMessage object.
+        System.setProperty("net.fortuna.ical4j.timezone.cache.impl", MapTimeZoneCache.class.getName());
 
-		List<User> u = this.pollRep.findAllUser4Poll(p.getId());
-		List<String> attendees = new ArrayList<String>();
-		for (User u1 : u) {
-			attendees.add(u1.getMail());
-		}
-		
-		String ics = this.getICS1(p.getSelectedChoice().getstartDate(), p.getSelectedChoice().getendDate(), p.getTitle(), attendees, organizermail);
-		Mail m = new Mail();
-		m.addAttachment("meeting.ics", ics.getBytes(), "text/calendar");
-	
-		m.setFrom(organizermail);
-		m.setTo(attendees);
-		m.setCc(Arrays.asList(organizermail));
-		m.setFrom(organizermail);
-		m.setSubject("Réunion c" + p.getTitle() + " [créneau confirmé] ");
-		m.setHtml("La date définitive pour la réunion : \""+ p.getTitle() + "\" a été validée par l\'organisateur. <BR>" + 
-				"Un salon a été créé de discussion pour cette réunion est accessible à cette adresse <a [href]=\" " +p.getTlkURL() + "\" target=\"_blank\">" + p.getTlkURL() + "</a>.<BR>\n" + 
-				"Un pad a été créé pour cette réunion <a [href]=\""+ p.getPadURL() + "\" target=\"_blank\">\""+ p.getPadURL() + "\"</a>.</span><BR>\n");
-		
-		mailer.send(m);
-		
-	}
+        final List<User> u = this.pollRep.findAllUser4Poll(p.getId());
+        final List<String> attendees = new ArrayList<String>();
+        for (User u1 : u) {
+            attendees.add(u1.getMail());
+        }
 
-	
-	public String getICS1(Date start, Date end, String libelle, List<String> attendees, String organizer) {
+        final String ics = this.getICS1(p.getSelectedChoice().getstartDate(), p.getSelectedChoice().getendDate(), p.getTitle(), attendees, organizermail);
+        final Mail m = new Mail();
+        m.addAttachment("meeting.ics", ics.getBytes(), "text/calendar");
 
-		// Create a TimeZone
-		TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
-		TimeZone timezone = registry.getTimeZone("Europe/Paris");
-		VTimeZone tz = timezone.getVTimeZone();
+        m.setFrom(organizermail);
+        m.setTo(attendees);
+        m.setCc(Arrays.asList(organizermail));
+        m.setFrom(organizermail);
+        m.setSubject("Réunion c" + p.getTitle() + " [créneau confirmé] ");
+        m.setHtml("La date définitive pour la réunion : \"" + p.getTitle() + "\" a été validée par l'organisateur. <BR>" +
+                "Un salon a été créé de discussion pour cette réunion est accessible à cette adresse <a [href]=\" " + p.getTlkURL() + "\" target=\"_blank\">" + p.getTlkURL() + "</a>.<BR>\n" +
+                "Un pad a été créé pour cette réunion <a [href]=\"" + p.getPadURL() + "\" target=\"_blank\">\"" + p.getPadURL() + "\"</a>.</span><BR>\n");
 
-		// Create the event
-		DateTime startd = new DateTime(start);
-		DateTime endd = new DateTime(end);
-		VEvent meeting = new VEvent(startd, endd, libelle);
-		// add timezone info..
-		meeting.getProperties().add(tz.getTimeZoneId());
+        mailer.send(m);
 
-		// generate unique identifier..
-		UidGenerator ug = new RandomUidGenerator();
-		Uid uid = ug.generateUid();
-		meeting.getProperties().add(uid);
+    }
 
 
-		// add attendees..
-		for (String attendee : attendees) {
-			Attendee p1 = new Attendee(URI.create("mailto:"+attendee));
-			p1.getParameters().add(Role.REQ_PARTICIPANT);
+    public String getICS1(Date start, Date end, String libelle, List<String> attendees, String organizer) {
+
+        // Create a TimeZone
+        final TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+        final TimeZone timezone = registry.getTimeZone("Europe/Paris");
+        final VTimeZone tz = timezone.getVTimeZone();
+
+        // Create the event
+        final DateTime startd = new DateTime(start);
+        final DateTime endd = new DateTime(end);
+        final VEvent meeting = new VEvent(startd, endd, libelle);
+        // add timezone info..
+        meeting.getProperties().add(tz.getTimeZoneId());
+
+        // generate unique identifier..
+        final UidGenerator ug = new RandomUidGenerator();
+        final Uid uid = ug.generateUid();
+        meeting.getProperties().add(uid);
+
+
+        // add attendees..
+        for (String attendee : attendees) {
+            final Attendee p1 = new Attendee(URI.create("mailto:" + attendee));
+            p1.getParameters().add(Role.REQ_PARTICIPANT);
 //			dev1.getParameters().add(new Cn("Developer 1"));
-			meeting.getProperties().add(p1);			
-		}
-		Organizer p1 = new Organizer(URI.create("mailto:"+organizer));
-		meeting.getProperties().add(p1);	
+            meeting.getProperties().add(p1);
+        }
+        final Organizer p1 = new Organizer(URI.create("mailto:" + organizer));
+        meeting.getProperties().add(p1);
 
 
-		// Create a calendar
-		net.fortuna.ical4j.model.Calendar icsCalendar = new net.fortuna.ical4j.model.Calendar();
-		icsCalendar.getProperties().add(Version.VERSION_2_0);
-		icsCalendar.getProperties().add(new ProdId("Zimbra-Calendar-Provider"));
-		icsCalendar.getProperties().add(CalScale.GREGORIAN);
-		icsCalendar.getProperties().add(Method.REQUEST);
-		icsCalendar.getComponents().add(tz);
+        // Create a calendar
+        final net.fortuna.ical4j.model.Calendar icsCalendar = new net.fortuna.ical4j.model.Calendar();
+        icsCalendar.getProperties().add(Version.VERSION_2_0);
+        icsCalendar.getProperties().add(new ProdId("Zimbra-Calendar-Provider"));
+        icsCalendar.getProperties().add(CalScale.GREGORIAN);
+        icsCalendar.getProperties().add(Method.REQUEST);
+        icsCalendar.getComponents().add(tz);
 
-		// Add the event and print
-		icsCalendar.getComponents().add(meeting);
-				
-		return icsCalendar.toString();
-	}
+        // Add the event and print
+        icsCalendar.getComponents().add(meeting);
+
+        return icsCalendar.toString();
+    }
 
 
 }
