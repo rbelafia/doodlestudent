@@ -12,6 +12,9 @@ public class ExampleResourceTest {
     @Test
     public void testCreateUser() {
         User user = new User("Michel");
+        user.setMail("michel@gmail.com");
+        user.setIcsurl("");
+
         given()
                 .body(user)
                 .when()
