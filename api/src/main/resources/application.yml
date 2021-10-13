@@ -1,3 +1,5 @@
+default.server.name: localhost:3306
+application.server: ${SERVER_NAME:${default.server.name}}
 greeting:
   message: "hello"
 doodle:
@@ -13,7 +15,7 @@ quarkus:
     username: tlc
     password: tlc
     jdbc:
-      url: jdbc:mysql://localhost:3306/tlc?useUnicode=true&serverTimezone=Europe/Paris
+      url: jdbc:mysql://${application.server}/tlc?useUnicode=true&serverTimezone=Europe/Paris
       driver: com.mysql.cj.jdbc.Driver
   flyway:
     migrate-at-start: true

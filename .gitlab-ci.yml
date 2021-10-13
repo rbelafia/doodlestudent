@@ -28,9 +28,9 @@ test-back:
     MYSQL_DATABASE: tlc
     MYSQL_USER: tlc
     MYSQL_PASSWORD: tlc
+    SERVER_NAME: mysql
   script:
     - cd api
-    - mysql --host=mysql --user=tlc --password=tlc tlc < src/main/resources/db/migration/V1__Initial_version.sql
     - mvn clean test
 
 
