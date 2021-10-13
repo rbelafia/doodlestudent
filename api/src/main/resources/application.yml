@@ -1,3 +1,4 @@
+default-server-name: localhost:3306
 greeting:
   message: "hello"
 doodle:
@@ -8,13 +9,12 @@ doodle:
   organizermail: "olivier.barais@gmail.com"
   tmpfolder: "/tmp/excelFiles"
 quarkus:
-  default.server.name: localhost:3306
   datasource:
     db-kind: mysql
     username: tlc
     password: tlc
     jdbc:
-      url: jdbc:mysql://${SERVER_NAME:${default.server.name}}/tlc?useUnicode=true&serverTimezone=Europe/Paris
+      url: jdbc:mysql://${SERVER_NAME:${default-server-name}}/tlc?useUnicode=true&serverTimezone=Europe/Paris
       driver: com.mysql.cj.jdbc.Driver
   flyway:
     migrate-at-start: true
