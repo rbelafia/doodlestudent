@@ -1,5 +1,3 @@
-default.server.name: localhost:3306
-application.server: ${SERVER_NAME:${default.server.name}}
 greeting:
   message: "hello"
 doodle:
@@ -10,6 +8,8 @@ doodle:
   organizermail: "olivier.barais@gmail.com"
   tmpfolder: "/tmp/excelFiles"
 quarkus:
+  default.server.name: localhost:3306
+  application.server: ${SERVER_NAME:${default.server.name}}
   datasource:
     db-kind: mysql
     username: tlc

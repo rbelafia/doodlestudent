@@ -30,6 +30,7 @@ test-back:
     MYSQL_PASSWORD: tlc
     SERVER_NAME: mysql:3306
   script:
+    - echo $SERVER_NAME
     - cd api
     - mvn clean test
 
