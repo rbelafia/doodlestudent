@@ -44,7 +44,7 @@ test-back:
   artifacts:
     reports:
       junit:
-        - target/surefire-reports/TEST-*.xml
+        - api/target/surefire-reports/TEST-*.xml
 
 #test-front:
 #  image: node:10-alpine
