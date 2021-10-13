@@ -1,9 +1,15 @@
-cache:
-  paths:
-    - api/.m2/repository/
+.maven:
+  image: maven:3.8.1-jdk-11-slim
+  cache:
+    key: maven-$CI_COMMIT_REF_SLUG
+    paths:
+      - api/.m2/repository/
+  variables:
+    MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+    MAVEN_CLI_OPTS: "-Dmaven.repo.local=.m2/repository -Dstyle.color=always"
 
 build-back:
-  image: maven:3.8.1-jdk-11-slim
+  extends: .maven
   stage: build
   script:
     - cd api
@@ -22,7 +28,7 @@ build-back:
 #    - npm run ng build
 
 test-back:
-  image: maven:3.8.1-jdk-11-slim
+  extends: .maven
   stage: test
   services:
     - mysql
