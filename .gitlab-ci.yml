@@ -10,7 +10,7 @@
 
 compile-back:
   extends: .maven
-  stage: pre
+  stage: .pre
   script:
     - cd api
     - mvn clean compile
