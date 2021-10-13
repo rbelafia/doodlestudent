@@ -8,6 +8,17 @@
     MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
     MAVEN_CLI_OPTS: "-Dmaven.repo.local=.m2/repository -Dstyle.color=always"
 
+compile-back:
+  extends: .maven
+  stage: pre
+  script:
+    - cd api
+    - mvn clean compile
+  artifacts:
+    when: on_failure
+    paths:
+      - api/target/checkstyle-result.xml
+
 build-back:
   extends: .maven
   stage: build
