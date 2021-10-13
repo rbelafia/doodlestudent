@@ -42,9 +42,9 @@ test-back:
     - cd api
     - mvn clean test
   artifacts:
-    paths:
-      - api/target/surefire-reports
-    expire_in: 1 week
+    reports:
+      junit:
+        - target/surefire-reports/TEST-*.xml
 
 #test-front:
 #  image: node:10-alpine
