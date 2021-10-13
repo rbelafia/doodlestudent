@@ -9,13 +9,12 @@ doodle:
   tmpfolder: "/tmp/excelFiles"
 quarkus:
   default.server.name: localhost:3306
-  application.server: ${SERVER_NAME:${default.server.name}}
   datasource:
     db-kind: mysql
     username: tlc
     password: tlc
     jdbc:
-      url: jdbc:mysql://${application.server}/tlc?useUnicode=true&serverTimezone=Europe/Paris
+      url: jdbc:mysql://${SERVER_NAME:${default.server.name}}/tlc?useUnicode=true&serverTimezone=Europe/Paris
       driver: com.mysql.cj.jdbc.Driver
   flyway:
     migrate-at-start: true
