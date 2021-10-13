@@ -1,3 +1,6 @@
+cache:
+  paths:
+    - api/.m2/repository/
 
 build-back:
   image: maven:3.8.1-jdk-11-slim
