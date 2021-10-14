@@ -1,4 +1,5 @@
 default-server-name: localhost:3306
+default-http-port: 8127
 greeting:
   message: "hello"
 doodle:
@@ -33,3 +34,5 @@ quarkus:
 #    username: ""
 #    password: ""
     mock: false
+  http:
+    port: ${BACK_PORT:${default-http-port}}

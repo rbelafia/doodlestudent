@@ -105,9 +105,9 @@ test-integration:
     MYSQL_USER: tlc
     MYSQL_PASSWORD: tlc
     SERVER_NAME: mysql:3306
+    BACK_PORT: 8127
   script:
-    - ls api/target/
-    - java -jar api/target/tlcdemoApp-1.0.0-SNAPSHOT.jar &
+    - java -jar api/target/tlcdemoApp-1.0.0-SNAPSHOT.jar
     - cd front
     - npm install
     - ./node_modules/.bin/ng e2e
