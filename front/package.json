@@ -28,6 +28,7 @@
     "@ng-bootstrap/ng-bootstrap": "^7.0.0",
     "bootstrap": "^4.5.3",
     "jquery": "^3.5.1",
+    "karma-junit-reporter": "^2.0.1",
     "primeicons": "^4.0.0",
     "primeng": "^10.0.3",
     "rxjs": "~6.6.0",

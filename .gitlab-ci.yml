@@ -30,13 +30,13 @@ build-back:
       - api/target/tlcdemoApp-1.0.0-SNAPSHOT.jar
     expire_in: 1 week
 
-#build-front:
-#  image: node:10-alpine
-#  stage: build
-#  script:
-#    - cd front
-#    - npm install
-#    - npm run ng build
+build-front:
+  image: node:10-alpine
+  stage: build
+  script:
+    - cd front
+    - npm install
+    - npm run ng build
 
 test-back:
   extends: .maven
@@ -57,10 +57,17 @@ test-back:
       junit:
         - api/target/surefire-reports/TEST-*.xml
 
-#test-front:
-#  image: node:10-alpine
-#  stage: test
-#  script:
-#    - cd front
-#    - npm install
-#    - npm run ng test
+test-front:
+  image: node:10-alpine
+  stage: test
+  before_script:
+    - apk add chromium
+    - export CHROME_BIN=/usr/bin/chromium-browser
+  script:
+    - cd front
+    - npm install
+    - npm ng test --watch=false
+  artifacts:
+    reports:
+      junit:
+        - front/tests/junit-test-results.xml
