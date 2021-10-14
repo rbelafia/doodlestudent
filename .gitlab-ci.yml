@@ -22,6 +22,8 @@ compile-back:
 build-back:
   extends: .maven
   stage: build
+  needs:
+    - job: compile-back
   script:
     - cd api
     - mvn clean package -Dmaven.test.skip=true
@@ -41,6 +43,8 @@ build-front:
 test-back:
   extends: .maven
   stage: test
+  needs:
+    - job: build-back
   services:
     - mysql
   variables:
@@ -66,7 +70,7 @@ test-front:
   script:
     - cd front
     - npm install
-    - npm run ng test --no-watch --no-progress --browsers=ChromeHeadlessCI
+    - ng test --no-watch --no-progress --browsers=ChromeHeadlessCI
   artifacts:
     reports:
       junit:

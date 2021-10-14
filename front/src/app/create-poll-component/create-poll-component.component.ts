@@ -131,32 +131,33 @@ export class CreatePollComponentComponent implements OnInit {
       eventMouseEnter: (mouseEnterInfo) => {
 
       },
-      eventDrop: (info) => {
-        const evt = this.events.filter(e => e.id === info.event.id).pop();
-        evt.start = info.event.start;
-        evt.end = info.event.end;
-      },
-      eventResize: (info) => {
-        const evt = this.events.filter(e => e.id === info.event.id).pop();
-        const index = this.events.indexOf(evt);
-        evt.start = info.event.start;
-        evt.end = info.event.end;
-      },
-      eventClick: (info) => {
-        const evt = this.events.filter(e => e.id === info.event.id).pop();
-        if (evt != null){
-        const index = this.events.indexOf(evt);
-        if (index > -1) {
-          this.events.splice(index, 1);
-        }
-        const index1 = this.allevents.indexOf(evt);
-        if (index1 > -1) {
-          this.allevents.splice(index1, 1);
-        }
-        info.event.remove();
-      }
+      // },
+      // eventDrop: (info) => {
+      //   const evt = this.events.filter(e => e.id === info.event.id).pop();
+      //   evt.start = info.event.start;
+      //   evt.end = info.event.end;
+      // },
+      // eventResize: (info) => {
+      //   const evt = this.events.filter(e => e.id === info.event.id).pop();
+      //   const index = this.events.indexOf(evt);
+      //   evt.start = info.event.start;
+      //   evt.end = info.event.end;
+      // },
+      // eventClick: (info) => {
+      //   const evt = this.events.filter(e => e.id === info.event.id).pop();
+      //   if (evt != null){
+      //   const index = this.events.indexOf(evt);
+      //   if (index > -1) {
+      //     this.events.splice(index, 1);
+      //   }
+      //   const index1 = this.allevents.indexOf(evt);
+      //   if (index1 > -1) {
+      //     this.allevents.splice(index1, 1);
+      //   }
+      //   info.event.remove();
+      // }
 
-      },
+      // },
       validRange: {
         start: Date.now()
       }
