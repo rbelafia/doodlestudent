@@ -107,6 +107,8 @@ test-integration:
     SERVER_NAME: mysql:3306
     BACK_PORT: 8127
   script:
+    - apk update
+    - apk add openjdk11
     - java -jar api/target/tlcdemoApp-1.0.0-SNAPSHOT.jar
     - cd front
     - npm install
