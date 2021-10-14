@@ -98,6 +98,8 @@ test-integration:
   needs:
     - job: build-back
     - job: build-front
+  dependencies:
+    - build-back
   variables:
     MYSQL_ROOT_PASSWORD: root
     MYSQL_DATABASE: tlc
