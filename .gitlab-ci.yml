@@ -66,7 +66,7 @@ test-front:
   script:
     - cd front
     - npm install
-    - npm run ng test --watch=false
+    - npm run ng test --no-watch --no-progress --browsers=ChromeHeadlessCI
   artifacts:
     reports:
       junit:
