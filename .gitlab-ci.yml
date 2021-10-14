@@ -111,6 +111,7 @@ test-integration:
     - apk update
     - apk add openjdk11
     - ls
+    - ls api
     - java -jar tlcdemoApp-1.0.0-SNAPSHOT.jar
     - cd front
     - npm install
