@@ -1,3 +1,9 @@
+stages:
+  - validate
+  - build
+  - test
+  - integration
+
 .maven:
   image: maven:3.8.1-jdk-11-slim
   cache:
@@ -10,7 +16,7 @@
 
 compile-back:
   extends: .maven
-  stage: .pre
+  stage: validate
   script:
     - cd api
     - mvn clean compile
@@ -77,3 +83,20 @@ test-front:
     reports:
       junit:
         - front/artifacts/tests/junit-test-results.xml
+
+test-integration:
+  image: node:10-alpine
+  stage: integration
+  services:
+    - mysql
+  needs:
+    - job: test-back
+    - job: test-front
+  variables:
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_DATABASE: tlc
+    MYSQL_USER: tlc
+    MYSQL_PASSWORD: tlc
+    SERVER_NAME: mysql:3306
+  script:
+    - ls api/target
