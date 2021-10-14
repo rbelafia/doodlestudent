@@ -2,7 +2,6 @@ stages:
   - validate
   - build
   - test
-  - integration
 
 .maven:
   image: maven:3.8.1-jdk-11-slim
@@ -93,12 +92,12 @@ test-front:
 
 test-integration:
   extends: .node
-  stage: integration
+  stage: test
   services:
     - mysql
   needs:
-    - job: test-back
-    - job: test-front
+    - job: build-back
+    - job: build-front
   variables:
     MYSQL_ROOT_PASSWORD: root
     MYSQL_DATABASE: tlc
