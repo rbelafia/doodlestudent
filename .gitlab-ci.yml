@@ -64,6 +64,8 @@ test-back:
 test-front:
   image: node:10-alpine
   stage: test
+  needs:
+    - job: build-front
   before_script:
     - apk add chromium
     - export CHROME_BIN=/usr/bin/chromium-browser
@@ -74,4 +76,4 @@ test-front:
   artifacts:
     reports:
       junit:
-        - front/tests/junit-test-results.xml
+        - front/artifacts/tests/junit-test-results.xml
