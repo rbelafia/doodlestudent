@@ -14,6 +14,13 @@ stages:
     MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
     MAVEN_CLI_OPTS: "-Dmaven.repo.local=.m2/repository -Dstyle.color=always"
 
+.node:
+  image: node:10-alpine
+  cache:
+    key: node-$CI_COMMIT_REF_SLUG
+    paths:
+      - front/node_modules/
+
 compile-back:
   extends: .maven
   stage: validate
@@ -39,7 +46,7 @@ build-back:
     expire_in: 1 week
 
 build-front:
-  image: node:10-alpine
+  extends: .node
   stage: build
   script:
     - cd front
@@ -63,14 +70,12 @@ test-back:
     - cd api
     - mvn test
   artifacts:
-    paths:
-      - api/target/tlcdemoApp-1.0.0-SNAPSHOT.jar
     reports:
       junit:
         - api/target/surefire-reports/TEST-*.xml
 
 test-front:
-  image: node:10-alpine
+  extends: .node
   stage: test
   needs:
     - job: build-front
@@ -87,7 +92,7 @@ test-front:
         - front/artifacts/tests/junit-test-results.xml
 
 test-integration:
-  image: node:10-alpine
+  extends: .node
   stage: integration
   services:
     - mysql
@@ -101,6 +106,7 @@ test-integration:
     MYSQL_PASSWORD: tlc
     SERVER_NAME: mysql:3306
   script:
+    - ls api/target/
     - java -jar api/target/tlcdemoApp-1.0.0-SNAPSHOT.jar &
     - cd front
     - npm install
