@@ -32,7 +32,7 @@ build-back:
     - job: compile-back
   script:
     - cd api
-    - mvn clean package -Dmaven.test.skip=true
+    - mvn clean package -Dmaven.test.skip=true -Dquarkus.package.type=uber-jar
   artifacts:
     paths:
       - api/target/tlcdemoApp-1.0.0-SNAPSHOT.jar
@@ -61,8 +61,10 @@ test-back:
     SERVER_NAME: mysql:3306
   script:
     - cd api
-    - mvn clean test
+    - mvn test
   artifacts:
+    paths:
+      - api/target/tlcdemoApp-1.0.0-SNAPSHOT.jar
     reports:
       junit:
         - api/target/surefire-reports/TEST-*.xml
@@ -99,4 +101,7 @@ test-integration:
     MYSQL_PASSWORD: tlc
     SERVER_NAME: mysql:3306
   script:
-    - ls api/target
+    - java -jar api/target/tlcdemoApp-1.0.0-SNAPSHOT.jar &
+    - cd front
+    - npm install
+    - ./node_modules/.bin/ng e2e
