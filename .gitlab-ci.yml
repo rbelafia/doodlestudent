@@ -110,7 +110,8 @@ test-integration:
   script:
     - apk update
     - apk add openjdk11
-    - java -jar api/target/tlcdemoApp-1.0.0-SNAPSHOT.jar
+    - ls
+    - java -jar tlcdemoApp-1.0.0-SNAPSHOT.jar
     - cd front
     - npm install
     - ./node_modules/.bin/ng e2e
