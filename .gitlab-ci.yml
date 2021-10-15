@@ -24,6 +24,7 @@ compile-back:
   extends: .maven
   stage: validate
   script:
+    - git diff ${CI_COMMIT_SHA} main
     - cd api
     - mvn clean compile
   artifacts:
@@ -111,12 +112,11 @@ test-integration:
     - apk add chromium
     - export CHROME_BIN=/usr/bin/chromium-browser
     # Install latest Chrome stable, Xvfb packages
-    - apk add default-jre
+    - apk update
+    - apk add openjdk11
     # Download Selenium server JAR, drivers for Chrome
     - node ./node_modules/.bin/webdriver-manager update
   script:
-    - apk update
-    - apk add openjdk11
     - java -jar api/target/tlcdemoApp-1.0.0-SNAPSHOT-runner.jar &
     - cd front
     - npm install
