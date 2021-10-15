@@ -1,5 +1,5 @@
 stages:
-  - git
+  - check
   - validate
   - build
   - test
@@ -23,7 +23,7 @@ stages:
 
 check-previous-commit-back:
   image: alpine/git
-  stage: git
+  stage: check
   script:
     - git diff ${CI_COMMIT_SHA} main
 
