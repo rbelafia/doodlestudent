@@ -26,6 +26,10 @@ compile-back:
   script:
     - cd api
     - mvn clean compile
+  rules:
+    - changes:
+        - api/src
+        - api/checkstyle.xml
   artifacts:
     when: on_failure
     paths:
@@ -81,13 +85,15 @@ test-front:
   stage: test
   needs:
     - job: build-front
-  before_script:
+  script:
     - apk add chromium
     - export CHROME_BIN=/usr/bin/chromium-browser
-  script:
     - cd front
     - npm install
     - ./node_modules/.bin/ng test --no-watch --no-progress --browsers=ChromeHeadlessCI
+  rules:
+    - changes:
+        - front/src
   artifacts:
     reports:
       junit:
@@ -110,7 +116,7 @@ test-integration:
     MYSQL_PASSWORD: tlc
     SERVER_NAME: mysql:3306
     BACK_PORT: 8127
-  before_script:
+  script:
     - apk add chromium
     - export CHROME_BIN=/usr/bin/chromium-browser
     # Install latest Chrome stable, Xvfb packages
@@ -118,8 +124,12 @@ test-integration:
     - apk add openjdk11
     # Download Selenium server JAR, drivers for Chrome
     - node ./node_modules/.bin/webdriver-manager update
-  script:
     - java -jar api/target/tlcdemoApp-1.0.0-SNAPSHOT-runner.jar &
     - cd front
     - npm install
     - ./node_modules/.bin/ng e2e
+  rules:
+    - changes:
+        - api/src/main
+        - front/src
+        - front/e2e
