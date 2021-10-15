@@ -1,5 +1,4 @@
 stages:
-  - check
   - validate
   - build
   - test
@@ -20,12 +19,6 @@ stages:
     key: node-$CI_COMMIT_REF_SLUG
     paths:
       - front/node_modules/
-
-check-previous-commit-back:
-  image: alpine/git
-  stage: check
-  script:
-    - git diff ${CI_COMMIT_SHA} main
 
 compile-back:
   extends: .maven
@@ -75,6 +68,9 @@ test-back:
   script:
     - cd api
     - mvn test
+  rules:
+    - changes:
+      - api/src
   artifacts:
     reports:
       junit:
