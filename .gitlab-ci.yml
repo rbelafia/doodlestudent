@@ -39,7 +39,7 @@ build-back:
   script:
     - cd api
     - mvn clean package -Dmaven.test.skip=true -Dquarkus.package.type=uber-jar
-    - ls api/target
+    - ls target
   artifacts:
     paths:
       - api/target/tlcdemoApp-1.0.0-SNAPSHOT.jar
