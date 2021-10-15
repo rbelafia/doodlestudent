@@ -2,6 +2,7 @@ stages:
   - validate
   - build
   - test
+  - deploy
 
 .maven:
   image: maven:3.8.1-jdk-11-slim
@@ -30,6 +31,7 @@ compile-back:
     - changes:
         - api/src
         - api/checkstyle.xml
+        - .gitlab-ci.yml
   artifacts:
     when: on_failure
     paths:
@@ -66,13 +68,14 @@ test-back:
     MYSQL_DATABASE: tlc
     MYSQL_USER: tlc
     MYSQL_PASSWORD: tlc
-    SERVER_NAME: mysql:3306
+    SERVER_NAME: mysql
   script:
     - cd api
     - mvn test
   rules:
     - changes:
       - api/src
+      - .gitlab-ci.yml
   artifacts:
     reports:
       junit:
@@ -92,6 +95,7 @@ test-front:
   rules:
     - changes:
         - front/src
+        - .gitlab-ci.yml
   artifacts:
     reports:
       junit:
@@ -112,7 +116,7 @@ test-integration:
     MYSQL_DATABASE: tlc
     MYSQL_USER: tlc
     MYSQL_PASSWORD: tlc
-    SERVER_NAME: mysql:3306
+    SERVER_NAME: mysql
     BACK_PORT: 8127
   script:
     - apk add chromium
@@ -131,3 +135,35 @@ test-integration:
         - api/src/main
         - front/src
         - front/e2e
+        - .gitlab-ci.yml
+
+deploy-back:
+  image: docker:latest
+  stage: deploy
+  dependencies:
+    - test-back
+  script:
+    - cd api
+    - docker build -t tlc-backend .
+    - docker save tlc-backend | xz > target/tlc-backend-docker.tar.xz
+  rules:
+    - changes:
+        - api/src
+        - .gitlab-ci.yml
+
+#deploy-front:
+#  image: docker:latest
+#  stage: deploy
+#  dependencies:
+#    - test-front
+#    - test-integration
+#  script:
+#    - cd front
+#    - docker build -t tlc-frontend .
+#    - docker save tlc-frontend | xz > target/tlc-frontend-docker.tar.xz
+#  rules:
+#    - changes:
+#        - api/src/main
+#        - front/src
+#        - front/e2e
+#        - .gitlab-ci.yml
