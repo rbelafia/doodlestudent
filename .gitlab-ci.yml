@@ -42,7 +42,7 @@ build-back:
     - ls target
   artifacts:
     paths:
-      - api/target/tlcdemoApp-1.0.0-SNAPSHOT.jar.original
+      - api/target/tlcdemoApp-1.0.0-SNAPSHOT-runner.jar
     expire_in: 1 day
 
 build-front:
@@ -111,7 +111,7 @@ test-integration:
   script:
     - apk update
     - apk add openjdk11
-    - java -jar api/target/tlcdemoApp-1.0.0-SNAPSHOT.jar.original
+    - java -jar api/target/tlcdemoApp-1.0.0-SNAPSHOT-runner.jar
     - cd front
     - npm install
     - ./node_modules/.bin/ng e2e
