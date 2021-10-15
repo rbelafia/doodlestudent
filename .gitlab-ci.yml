@@ -1,10 +1,11 @@
 stages:
+  - git
   - validate
   - build
   - test
 
 .maven:
-  image: maven:3.8.1-jdk-11-alpine
+  image: maven:3.8.1-jdk-11-slim
   cache:
     key: maven-$CI_COMMIT_REF_SLUG
     paths:
@@ -20,12 +21,16 @@ stages:
     paths:
       - front/node_modules/
 
+check-previous-commit-back:
+  image: alpine/git
+  stage: git
+  script:
+    - git diff ${CI_COMMIT_SHA} main
+
 compile-back:
   extends: .maven
   stage: validate
   script:
-    - apk add git
-    - git diff ${CI_COMMIT_SHA} main
     - cd api
     - mvn clean compile
   artifacts:
