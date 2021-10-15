@@ -38,8 +38,6 @@ compile-back:
 build-back:
   extends: .maven
   stage: build
-  needs:
-    - job: compile-back
   script:
     - cd api
     - mvn clean package -Dmaven.test.skip=true -Dquarkus.package.type=uber-jar
