@@ -140,6 +140,8 @@ test-integration:
 deploy-back:
   image: docker:latest
   stage: deploy
+  needs:
+    - job: test-back
   dependencies:
     - test-back
   script:
