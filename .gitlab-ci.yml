@@ -39,10 +39,11 @@ build-back:
   script:
     - cd api
     - mvn clean package -Dmaven.test.skip=true -Dquarkus.package.type=uber-jar
+    - ls api/target
   artifacts:
     paths:
       - api/target/tlcdemoApp-1.0.0-SNAPSHOT.jar
-    expire_in: 1 week
+    expire_in: 1 day
 
 build-front:
   extends: .node
