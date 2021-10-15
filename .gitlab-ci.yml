@@ -24,6 +24,7 @@ compile-back:
   extends: .maven
   stage: validate
   script:
+    - apt-get install git
     - git diff ${CI_COMMIT_SHA} main
     - cd api
     - mvn clean compile
