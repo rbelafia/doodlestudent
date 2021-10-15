@@ -111,7 +111,7 @@ test-integration:
     - apk add chromium
     - export CHROME_BIN=/usr/bin/chromium-browser
     # Install latest Chrome stable, Xvfb packages
-    - apt-get default-jre
+    - apk add default-jre
     # Download Selenium server JAR, drivers for Chrome
     - node ./node_modules/.bin/webdriver-manager update
   script:
