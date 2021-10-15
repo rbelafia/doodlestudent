@@ -107,6 +107,9 @@ test-integration:
     MYSQL_PASSWORD: tlc
     SERVER_NAME: mysql:3306
     BACK_PORT: 8127
+  before_script:
+    - apk add chromium
+    - export CHROME_BIN=/usr/bin/chromium-browser
   script:
     - apk update
     - apk add openjdk11
