@@ -162,7 +162,7 @@ deploy-back:
     - docker:20.10.9-dind
   before_script:
     - docker info
-    - apk add xz-utils
+    - apk add xz
   script:
     - cd api
     - docker build -t tlc-backend .
