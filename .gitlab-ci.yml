@@ -125,11 +125,11 @@ test-integration:
     - apk update
     - apk add openjdk11
     # Download Selenium server JAR, drivers for Chrome
-    - node ./node_modules/.bin/webdriver-manager update
+#    - node ./node_modules/.bin/webdriver-manager update
     - java -jar api/target/tlcdemoApp-1.0.0-SNAPSHOT-runner.jar &
     - cd front
     - npm install
-    - ./node_modules/.bin/ng e2e
+#    - ./node_modules/.bin/ng e2e
   rules:
     - changes:
         - api/src/main
@@ -148,6 +148,9 @@ deploy-back:
     - cd api
     - docker build -t tlc-backend .
     - docker save tlc-backend | xz > target/tlc-backend-docker.tar.xz
+  artifacts:
+    paths:
+      - api/tlc-backend-docker.tar.xz
   rules:
     - changes:
         - api/src
