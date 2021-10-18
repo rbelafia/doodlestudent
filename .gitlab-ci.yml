@@ -39,6 +39,18 @@ compile-back:
     paths:
       - api/target/checkstyle-result.xml
 
+lint-front:
+  extends: .node
+  stage: valide
+  script:
+    - cd front
+    - npm install
+    - npm run ng lint
+  rules:
+    - changes:
+        - front/src
+        - .gitlab-ci.yml
+
 build-back:
   extends: .maven
   stage: build
