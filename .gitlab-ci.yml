@@ -153,6 +153,7 @@ deploy-back:
   script:
     - cd api
     - docker build -t tlc-backend .
+    - mkdir target
     - docker save tlc-backend | xz > target/tlc-backend-docker.tar.xz
   artifacts:
     paths:
