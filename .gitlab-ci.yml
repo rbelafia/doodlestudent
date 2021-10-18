@@ -140,7 +140,7 @@ test-integration:
         - .gitlab-ci.yml
 
 deploy-back:
-  image: docker/latest
+  image: docker:latest
   stage: deploy
   needs:
     - job: test-back
