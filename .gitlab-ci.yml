@@ -160,6 +160,7 @@ deploy-back:
   rules:
     - changes:
         - api/src
+        - api/Dockerfile
         - .gitlab-ci.yml
 
 #deploy-front:

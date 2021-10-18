@@ -5,6 +5,7 @@ FROM maven:3.8.1-jdk-11-slim
 RUN mkdir -p /app
 WORKDIR /app
 COPY pom.xml /app
+COPY checkstyle.xml /app
 COPY src /app/src
 RUN mvn clean package -Dmaven.test.skip=true
 EXPOSE 8127
