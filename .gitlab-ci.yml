@@ -4,6 +4,7 @@ stages:
   - test
   - deploy
 
+# Configuration for backend jobs
 .maven:
   image: maven:3.8.1-jdk-11-slim
   cache:
@@ -14,6 +15,7 @@ stages:
     MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
     MAVEN_CLI_OPTS: "-Dmaven.repo.local=.m2/repository -Dstyle.color=always"
 
+# Configuration for frontend jobs
 .node:
   image: node:10-alpine
   cache:
