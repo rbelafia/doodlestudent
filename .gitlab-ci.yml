@@ -162,6 +162,7 @@ deploy-back:
     - docker:20.10.9-dind
   before_script:
     - docker info
+    - apk add xz-utils
   script:
     - cd api
     - docker build -t tlc-backend .
@@ -169,7 +170,7 @@ deploy-back:
     - docker save tlc-backend | xz > target/tlc-backend-docker.tar.xz
   artifacts:
     paths:
-      - api/tlc-backend-docker.tar.xz
+      - api/target/tlc-backend-docker.tar.xz
   rules:
     - changes:
         - api/src
