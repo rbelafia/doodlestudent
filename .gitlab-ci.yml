@@ -144,6 +144,8 @@ deploy-back:
     - job: test-back
   dependencies:
     - test-back
+  before_script:
+    - docker info
   script:
     - cd api
     - docker build -t tlc-backend .
