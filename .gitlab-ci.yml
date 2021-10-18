@@ -41,7 +41,7 @@ compile-back:
 
 lint-front:
   extends: .node
-  stage: valide
+  stage: validate
   script:
     - cd front
     - npm install
