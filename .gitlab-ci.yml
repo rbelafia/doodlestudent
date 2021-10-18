@@ -140,7 +140,7 @@ test-integration:
         - .gitlab-ci.yml
 
 deploy-back:
-  extends: .maven
+  image: docker/latest
   stage: deploy
   needs:
     - job: test-back
