@@ -140,12 +140,14 @@ test-integration:
         - .gitlab-ci.yml
 
 deploy-back:
-  image: docker:latest
+  image: docker:20.10.9
   stage: deploy
   needs:
     - job: test-back
   dependencies:
     - test-back
+  services:
+    - docker:20.10.9-dind
   before_script:
     - docker info
   script:
