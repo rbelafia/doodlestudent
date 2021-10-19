@@ -2,7 +2,7 @@ stages:
   - validate
   - build
   - test
-  - deploy
+  - package
 
 # Configuration for backend jobs
 .maven:
@@ -138,7 +138,6 @@ test-integration:
     # Install latest Chrome stable, Xvfb packages
     - apk update
     - apk add openjdk11
-    # Download Selenium server JAR, drivers for Chrome
 #    - node ./node_modules/.bin/webdriver-manager update
     - java -jar api/target/tlcdemoApp-1.0.0-SNAPSHOT-runner.jar &
     - cd front
@@ -153,7 +152,7 @@ test-integration:
 
 deploy-back:
   image: docker:20.10.9
-  stage: deploy
+  stage: package
   needs:
     - job: test-back
   dependencies:
