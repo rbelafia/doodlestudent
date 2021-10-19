@@ -7,4 +7,4 @@ COPY target/tlcdemoApp-1.0.0-SNAPSHOT-runner.jar /app
 
 EXPOSE 8127
 
-ENTRYPOINT ["java","-jar","app/target/tlcdemoApp-1.0.0-SNAPSHOT-runner.jar"]
+ENTRYPOINT ["java","-jar","app/tlcdemoApp-1.0.0-SNAPSHOT-runner.jar"]

@@ -157,6 +157,7 @@ package-back:
     - job: test-back
   dependencies:
     - test-back
+    - build-back
   services:
     - docker:20.10.9-dind
   before_script:
