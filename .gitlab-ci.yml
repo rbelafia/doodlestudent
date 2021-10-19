@@ -150,7 +150,7 @@ test-integration:
         - front/e2e
         - .gitlab-ci.yml
 
-deploy-back:
+package-back:
   image: docker:20.10.9
   stage: package
   needs:
