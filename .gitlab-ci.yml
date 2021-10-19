@@ -23,6 +23,7 @@ stages:
     paths:
       - front/node_modules/
 
+# Checkstyle for backend
 compile-back:
   extends: .maven
   stage: validate
