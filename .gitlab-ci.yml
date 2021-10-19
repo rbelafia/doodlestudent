@@ -154,6 +154,7 @@ package-back:
   image: docker:20.10.9
   stage: package
   needs:
+    - job: build-back
     - job: test-back
   dependencies:
     - test-back
