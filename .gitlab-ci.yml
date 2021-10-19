@@ -135,7 +135,6 @@ test-integration:
   script:
     - apk add chromium
     - export CHROME_BIN=/usr/bin/chromium-browser
-    # Install latest Chrome stable, Xvfb packages
     - apk update
     - apk add openjdk11
 #    - node ./node_modules/.bin/webdriver-manager update
