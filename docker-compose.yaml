@@ -1,14 +1,13 @@
 version: "3.8"
 services:
-  back:
-    image: maven:3.8.1-jdk-11-slim
+  backend:
     build: ./api/
     depends_on:
       - db
       - etherpad
       - mail
     environment:
-      SERVER_NAME: db
+      MYSQL_SERVER_NAME: db
       BACK_PORT: 8127
   db:
     image: mysql
@@ -30,6 +29,10 @@ services:
     restart: always
     ports:
       - "2525:25"
-  front:
+  frontend:
     build: ./front
+    ports:
+      - "8080:80"
+
+
 
