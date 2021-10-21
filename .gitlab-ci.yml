@@ -3,6 +3,7 @@ stages:
   - build
   - test
   - package
+  - deploy
 
 # Configuration for backend jobs
 .maven:
@@ -171,10 +172,10 @@ package-back:
   script:
     - cd api
     - docker build -t tlc-backend .
-    - docker save tlc-backend | xz > tlc-backend-docker.tar.xz
+    - docker save tlc-backend | xz > ../tlc-backend-docker.tar.xz
   artifacts:
     paths:
-      - api/tlc-backend-docker.tar.xz
+      - tlc-backend-docker.tar.xz
   rules:
     - changes:
         - api/src
@@ -198,11 +199,25 @@ package-front:
   script:
     - cd front
     - docker build -t tlc-frontend .
-    - docker save tlc-frontend | xz > tlc-frontend-docker.tar.xz
+    - docker save tlc-frontend | xz > ../tlc-frontend-docker.tar.xz
   artifacts:
     paths:
-      - api/tlc-frontend-docker.tar.xz
+      - tlc-frontend-docker.tar.xz
   rules:
     - changes:
         - front
         - .gitlab-ci.yml
+
+deploy:
+  image: docker:20.10.9
+  stage: deploy
+  needs:
+    - job: package-back
+    - job: package-front
+  dependencies:
+    - package-back
+    - package-front
+  services:
+    - docker:20.10.9-dind
+  script:
+    - ls
