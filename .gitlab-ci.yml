@@ -87,7 +87,7 @@ test-back:
     MYSQL_DATABASE: tlc
     MYSQL_USER: tlc
     MYSQL_PASSWORD: tlc
-    SERVER_NAME: mysql
+    MYSQL_SERVER_NAME: mysql
   script:
     - cd api
     - mvn test
@@ -181,19 +181,28 @@ package-back:
         - api/Dockerfile
         - .gitlab-ci.yml
 
-#deploy-front:
-#  image: docker:latest
-#  stage: deploy
-#  dependencies:
-#    - test-front
-#    - test-integration
-#  script:
-#    - cd front
-#    - docker build -t tlc-frontend .
-#    - docker save tlc-frontend | xz > target/tlc-frontend-docker.tar.xz
-#  rules:
-#    - changes:
-#        - api/src/main
-#        - front/src
-#        - front/e2e
-#        - .gitlab-ci.yml
+package-front:
+  image: docker:20.10.9
+  stage: package
+  needs:
+    - job: build-front
+    - job: test-front
+  dependencies:
+    - test-front
+    - build-front
+  services:
+    - docker:20.10.9-dind
+  before_script:
+    - docker info
+    - apk add xz
+  script:
+    - cd front
+    - docker build -t tlc-frontend .
+    - docker save tlc-frontend | xz > target/tlc-frontend-docker.tar.xz
+  artifacts:
+    paths:
+      - api/target/tlc-frontend-docker.tar.xz
+  rules:
+    - changes:
+        - front
+        - .gitlab-ci.yml

@@ -1,4 +1,4 @@
-default-server-name: localhost
+default-mysql-server-name: localhost
 default-http-port: 8127
 greeting:
   message: "hello"
@@ -15,7 +15,7 @@ quarkus:
     username: tlc
     password: tlc
     jdbc:
-      url: jdbc:mysql://${SERVER_NAME:${default-server-name}}:3306/tlc?useUnicode=true&serverTimezone=Europe/Paris
+      url: jdbc:mysql://${MYSQL_SERVER_NAME:${default-mysql-server-name}}:3306/tlc?useUnicode=true&serverTimezone=Europe/Paris
       driver: com.mysql.cj.jdbc.Driver
   flyway:
     migrate-at-start: true
