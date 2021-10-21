@@ -69,7 +69,11 @@ build-front:
   script:
     - cd front
     - npm install
-    - npm run ng build
+    - ./node_modules/.bin/ng build --prod
+  artifacts:
+    paths:
+      - front/dist/tlcfront/*
+    expire_in: 1 day
 
 test-back:
   extends: .maven
