@@ -188,9 +188,11 @@ package-front:
   needs:
     - job: build-front
     - job: test-front
+    - job: test-integration
   dependencies:
-    - test-front
     - build-front
+    - test-front
+    - test-integration
   services:
     - docker:20.10.9-dind
   before_script:
@@ -220,5 +222,6 @@ deploy:
   services:
     - docker:20.10.9-dind
   script:
+    - apk add curl
     - curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
     - chmod +x /usr/local/bin/docker-compose
