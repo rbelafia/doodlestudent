@@ -155,74 +155,79 @@ test-integration:
         - front/e2e
         - .gitlab-ci.yml
 
-package-back:
-  image: docker:20.10.9
-  stage: package
-  needs:
-    - job: build-back
-    - job: test-back
-  dependencies:
-    - test-back
-    - build-back
-  services:
-    - docker:20.10.9-dind
-  before_script:
-    - docker info
-    - apk add xz
-  script:
-    - cd api
-    - docker build -t tlc-backend .
-    - docker save tlc-backend | xz > ../tlc-backend-docker.tar.xz
-  artifacts:
-    paths:
-      - tlc-backend-docker.tar.xz
-  rules:
-    - changes:
-        - api/src
-        - api/Dockerfile
-        - .gitlab-ci.yml
-
-package-front:
-  image: docker:20.10.9
-  stage: package
-  needs:
-    - job: build-front
-    - job: test-front
-    - job: test-integration
-  dependencies:
-    - build-front
-    - test-front
-    - test-integration
-  services:
-    - docker:20.10.9-dind
-  before_script:
-    - docker info
-    - apk add xz
-  script:
-    - cd front
-    - docker build -t tlc-frontend .
-    - docker save tlc-frontend | xz > ../tlc-frontend-docker.tar.xz
-  artifacts:
-    paths:
-      - tlc-frontend-docker.tar.xz
-  rules:
-    - changes:
-        - front
-        - .gitlab-ci.yml
+#package-back:
+#  image: docker:20.10.9
+#  stage: package
+#  needs:
+#    - job: build-back
+#    - job: test-back
+#  dependencies:
+#    - test-back
+#    - build-back
+#  services:
+#    - docker:20.10.9-dind
+#  before_script:
+#    - docker info
+#    - apk add xz
+#  script:
+#    - cd api
+#    - docker build -t tlc-backend .
+#    - docker save tlc-backend | xz > ../tlc-backend-docker.tar.xz
+#  artifacts:
+#    paths:
+#      - tlc-backend-docker.tar.xz
+#  rules:
+#    - changes:
+#        - api/src
+#        - api/Dockerfile
+#        - .gitlab-ci.yml
+#
+#package-front:
+#  image: docker:20.10.9
+#  stage: package
+#  needs:
+#    - job: build-front
+#    - job: test-front
+#    - job: test-integration
+#  dependencies:
+#    - build-front
+#    - test-front
+#    - test-integration
+#  services:
+#    - docker:20.10.9-dind
+#  before_script:
+#    - docker info
+#    - apk add xz
+#  script:
+#    - cd front
+#    - docker build -t tlc-frontend .
+#    - docker save tlc-frontend | xz > ../tlc-frontend-docker.tar.xz
+#  artifacts:
+#    paths:
+#      - tlc-frontend-docker.tar.xz
+#  rules:
+#    - changes:
+#        - front
+#        - .gitlab-ci.yml
 
 deploy:
   image: docker:20.10.9
   stage: deploy
   needs:
-    - job: package-back
-    - job: package-front
+    - job: build-back
+    - job: build-front
+    - job: test-back
+    - job: test-front
   dependencies:
-    - package-back
-    - package-front
+    - build-back
+    - build-front
+    - test-back
+    - test-front
   services:
     - docker:20.10.9-dind
   script:
     - apk add curl
     - curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
     - chmod +x /usr/local/bin/docker-compose
+    - ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
     - docker-compose up -d
