@@ -176,6 +176,7 @@ package-back:
   artifacts:
     paths:
       - tlc-backend-docker.tar.xz
+      - api/target/tlcdemoApp-1.0.0-SNAPSHOT-runner.jar
   rules:
     - changes:
         - api/src
@@ -205,6 +206,7 @@ package-front:
   artifacts:
     paths:
       - tlc-frontend-docker.tar.xz
+      - front/dist/tlcfront/*
   rules:
     - changes:
         - front
