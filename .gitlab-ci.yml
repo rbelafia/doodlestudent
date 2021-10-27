@@ -38,7 +38,8 @@ test-connect:
     - eval $(ssh-agent -s)
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - 'ssh-add <(echo "$STAGING_PRIVATE_KEY")'
+    - echo "$STAGING_PRIVATE_KEY"
+    - ssh-add < "$STAGING_PRIVATE_KEY"
     - ssh -p22 "$SERVER_USER"@"$SERVER_IP" "echo 'hello'"
 
 # Checkstyle for backend
