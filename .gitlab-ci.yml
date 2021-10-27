@@ -206,7 +206,8 @@ package-front:
   artifacts:
     paths:
       - tlc-frontend-docker.tar.xz
-      - front/dist/tlcfront/*
+      - front/dist/*
+      - front/nginx.conf
   rules:
     - changes:
         - front
@@ -223,6 +224,14 @@ deploy:
     - package-front
   services:
     - docker:20.10.9-dind
+  variables:
+    SERVER_USER: romain
+  before_script:
+    - apk add openssh-client
+    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - apk add --no-cache docker-compose
-    - docker-compose up -d
+    - cd front
+    - scp -P22 nginx.conf "$SERVER_USER"@"$SERVER_IP":~/conf.d/tlc.conf
+    - scp -P22 -r dist/tlcfront "$SERVER_USER"@"$SERVER_IP":~/html
