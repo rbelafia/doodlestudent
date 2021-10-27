@@ -1,4 +1,5 @@
 stages:
+  - connect
   - validate
   - build
   - test
@@ -23,6 +24,22 @@ stages:
     key: node-$CI_COMMIT_REF_SLUG
     paths:
       - front/node_modules/
+
+test-connect:
+  image: docker:20.10.9
+  stage: connect
+  variables:
+    SERVER_USER: romain
+  services:
+    - docker:20.10.9-dind
+  before_script:
+    - apk add openssh-client
+    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  script:
+    - ssh-add <(echo "$STAGING_PRIVATE_KEY")
+    - ssh -p22 "$SERVER_USER"@"$SERVER_IP" "echo 'hello'"
 
 # Checkstyle for backend
 compile-back:
